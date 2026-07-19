@@ -10,9 +10,9 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:textSize="50sp"
         android:layout_height="wrap_content"
         android:text="Hello I am mahbub"
+        android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,8 +22,13 @@
         android:layout_width="409dp"
         android:layout_height="301dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="2dp">
+
 
         <ImageView
             android:id="@+id/imageView"
