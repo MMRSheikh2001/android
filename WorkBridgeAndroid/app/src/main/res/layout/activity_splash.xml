@@ -19,7 +19,7 @@
             android:id="@+id/imgLogo"
             android:layout_width="140dp"
             android:layout_height="140dp"
-            android:src="@drawable/workbridgelogo"
+            android:src="@drawable/workbridge_logo"
             android:contentDescription="WorkBridge Logo" />
 
         <TextView
