@@ -4,11 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
@@ -33,7 +30,7 @@ public class HomeActivity extends AppCompatActivity {
 
         LoginResponseDTO user=sessionManager.getUser();
         if(user!=null){
-            tvWelcome.setText("Welcome, "+user.getD);
+            tvWelcome.setText("Welcome, "+user.getDisplayName()+" !");
         }
 
         btnLogout.setOnClickListener(v->logout());
@@ -46,6 +43,10 @@ public class HomeActivity extends AppCompatActivity {
         cardMyApplications=findViewById(R.id.cardApplications);
         cardProfile=findViewById(R.id.cardProfile);
 
+        cardFindJobs.setOnClickListener(v->goToJobList());
+        cardMyApplications.setOnClickListener(v->goToMyApplications());
+        cardProfile.setOnClickListener(v->goToMyProfile());
+
         btnLogout=findViewById(R.id.btnLogout);
 
         sessionManager=new SessionManager(this);
@@ -53,10 +54,26 @@ public class HomeActivity extends AppCompatActivity {
     private void logout(){
         sessionManager.logout();
         Intent intent=new Intent(HomeActivity.this,LoginActivity.class);
-        startActivity(intent);
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
 
         finish();
+    }
+
+    private void goToJobList(){
+
+        Intent intent=new Intent(HomeActivity.this, JobListActivity.class);
+        startActivity(intent);
+
+    }
+
+    private void goToMyApplications(){
+
+    }
+    private void goToMyProfile(){
+
     }
 
 
