@@ -37,36 +37,36 @@ public interface ApiService {
 
 
     // Category
-    @GET("api/categories")
+    @GET("api/categories/")
     Call<List<CategoryResponseDTO>> getAllCategories();
 
     // Skill
-    @GET("api/skills")
+    @GET("api/skills/")
     Call<List<SkillResponseDTO>> getAllSkills();
 
     @GET("api/skills/category/{id}")
     Call<List<SkillResponseDTO>> getSkillsByCategoryId(@Path("id") Long id);
 
     // Country
-    @GET("api/countries")
+    @GET("api/countries/")
     Call<List<CountryResponseDTO>> getAllCountries();
 
     // Division
-    @GET("api/divisions")
+    @GET("api/divisions/")
     Call<List<DivisionResponseDTO>> getAllDivisions();
 
     @GET("api/divisions/country/{id}")
     Call<List<DivisionResponseDTO>> getDivisionsByCountryId(@Path("id") Long id);
 
     // District
-    @GET("api/districts")
+    @GET("api/districts/")
     Call<List<DistrictResponseDTO>> getAllDistricts();
 
     @GET("api/districts/division/{id}")
     Call<List<DistrictResponseDTO>> getDistrictsByDivisionId(@Path("id") Long id);
 
     // Police Station
-    @GET("api/policestations")
+    @GET("api/policestations/")
     Call<List<PoliceStationResponseDTO>> getAllPoliceStations();
 
     @GET("api/policestations/district/{id}")
