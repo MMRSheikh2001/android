@@ -1,5 +1,6 @@
 package com.MMRSheikh2001.workbridgeandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -8,17 +9,35 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
+import com.google.android.material.button.MaterialButton;
+
 public class HomeActivity extends AppCompatActivity {
+
+    private MaterialButton btnLogout;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_home);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        init();
+
+        btnLogout.setOnClickListener(v->logout());
     }
+
+    private  void init(){
+        btnLogout=findViewById(R.id.btnLogout);
+
+        sessionManager=new SessionManager(this);
+    }
+    private void logout(){
+        sessionManager.logout();
+        Intent intent=new Intent(HomeActivity.this,LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+
 }
