@@ -1,6 +1,8 @@
 package com.MMRSheikh2001.workbridgeandroid;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,6 +27,8 @@ import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DistrictResponseD
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DivisionResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.PoliceStationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.repository.JobRepository;
+import com.MMRSheikh2001.workbridgeandroid.request.JobSearchRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -80,6 +84,10 @@ public class JobListActivity extends AppCompatActivity {
         loadEmploymentTypes();
 
         loadWorkPlaceTypes();
+
+        setSpinnerListeners();
+
+        btnSearch.setOnClickListener(v->search());
 
     }
 
@@ -210,6 +218,310 @@ public class JobListActivity extends AppCompatActivity {
                         names);
 
         spWorkPlaceType.setAdapter(adapter);
+    }
+
+    private void setSpinnerListeners() {
+
+        spCountry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                clearDivision();
+                clearDistrict();
+                clearPoliceStation();
+
+                if (position == 0) {
+                    return;
+                }
+                CountryResponseDTO country = countryList.get(position - 1);
+                loadDivisions(country.getCountryId());
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent,
+                                       View view,
+                                       int position,
+                                       long id) {
+
+                clearDistrict();
+                clearPoliceStation();
+
+                if (position == 0) {
+                    return;
+                }
+
+                DivisionResponseDTO division = divisionList.get(position - 1);
+
+                loadDistricts(division.getDivisionId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        spDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent,
+                                       View view,
+                                       int position,
+                                       long id) {
+
+                clearPoliceStation();
+
+                if (position == 0) {
+                    return;
+                }
+
+                DistrictResponseDTO district = districtList.get(position - 1);
+
+                loadPoliceStations(district.getDistrictId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+    }
+
+    private void loadDivisions(Long countryId) {
+
+        divisionRepository.getDivisionsByCountryId(countryId,
+                new Callback<List<DivisionResponseDTO>>() {
+
+                    @Override
+                    public void onResponse(Call<List<DivisionResponseDTO>> call,
+                                           Response<List<DivisionResponseDTO>> response) {
+
+                        if (!response.isSuccessful() || response.body() == null)
+                            return;
+
+                        divisionList = response.body();
+
+                        List<String> names = new ArrayList<>();
+                        names.add("All Divisions");
+
+                        for (DivisionResponseDTO dto : divisionList) {
+                            names.add(dto.getDivisionName());
+                        }
+
+                        ArrayAdapter<String> adapter =
+                                new ArrayAdapter<>(
+                                        JobListActivity.this,
+                                        android.R.layout.simple_spinner_dropdown_item,
+                                        names);
+
+                        spDivision.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<DivisionResponseDTO>> call,
+                                          Throwable t) {
+
+                        Toast.makeText(JobListActivity.this,
+                                "Failed to load divisions",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+
+    private void loadDistricts(Long divisionId) {
+
+        districtRepository.getDistrictsByDivisionId(divisionId,
+                new Callback<List<DistrictResponseDTO>>() {
+
+                    @Override
+                    public void onResponse(Call<List<DistrictResponseDTO>> call,
+                                           Response<List<DistrictResponseDTO>> response) {
+
+                        if (!response.isSuccessful() || response.body() == null)
+                            return;
+
+                        districtList = response.body();
+
+                        List<String> names = new ArrayList<>();
+                        names.add("All Districts");
+
+                        for (DistrictResponseDTO dto : districtList) {
+                            names.add(dto.getDistrictName());
+                        }
+
+                        ArrayAdapter<String> adapter =
+                                new ArrayAdapter<>(
+                                        JobListActivity.this,
+                                        android.R.layout.simple_spinner_dropdown_item,
+                                        names);
+
+                        spDistrict.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<DistrictResponseDTO>> call,
+                                          Throwable t) {
+
+                        Toast.makeText(JobListActivity.this,
+                                "Failed to load districts",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+
+    private void loadPoliceStations(Long districtId) {
+
+        policeStationRepository.getPoliceStationsByDistrictId(
+                districtId,
+                new Callback<List<PoliceStationResponseDTO>>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<List<PoliceStationResponseDTO>> call,
+                            Response<List<PoliceStationResponseDTO>> response) {
+
+                        if (!response.isSuccessful() || response.body() == null)
+                            return;
+
+                        policeStationList = response.body();
+
+                        List<String> names = new ArrayList<>();
+                        names.add("All Police Stations");
+
+                        for (PoliceStationResponseDTO dto : policeStationList) {
+                            names.add(dto.getPoliceStationName());
+                        }
+
+                        ArrayAdapter<String> adapter =
+                                new ArrayAdapter<>(
+                                        JobListActivity.this,
+                                        android.R.layout.simple_spinner_dropdown_item,
+                                        names);
+
+                        spPoliceStation.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<List<PoliceStationResponseDTO>> call,
+                            Throwable t) {
+
+                        Toast.makeText(JobListActivity.this,
+                                "Failed to load police stations",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+
+    private void clearDivision() {
+
+        divisionList = new ArrayList<>();
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        new String[]{"All Divisions"});
+
+        spDivision.setAdapter(adapter);
+    }
+
+    private void clearDistrict() {
+
+        districtList = new ArrayList<>();
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        new String[]{"All Districts"});
+
+        spDistrict.setAdapter(adapter);
+    }
+
+    private void clearPoliceStation() {
+
+        policeStationList = new ArrayList<>();
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        new String[]{"All Police Stations"});
+
+        spPoliceStation.setAdapter(adapter);
+    }
+
+    private  void search(){
+
+        JobSearchRequestDTO dto = new JobSearchRequestDTO();
+
+        dto.setKeyword(etKeyword.getText().toString().trim());
+
+        if (spCategory.getSelectedItemPosition() > 0) {
+            dto.setCategoryId(
+                    categoryList.get(spCategory.getSelectedItemPosition() - 1).getId());
+        }
+
+        if (spCountry.getSelectedItemPosition() > 0) {
+            dto.setCountryId(
+                    countryList.get(spCountry.getSelectedItemPosition() - 1).getCountryId());
+        }
+
+        if (spDivision.getSelectedItemPosition() > 0) {
+            dto.setDivisionId(
+                    divisionList.get(spDivision.getSelectedItemPosition() - 1).getDivisionId());
+        }
+
+        if (spDistrict.getSelectedItemPosition() > 0) {
+            dto.setDistrictId(
+                    districtList.get(spDistrict.getSelectedItemPosition() - 1).getDistrictId());
+        }
+
+        if (spPoliceStation.getSelectedItemPosition() > 0) {
+            dto.setPoliceStationId(
+                    policeStationList.get(spPoliceStation.getSelectedItemPosition() - 1).getPoliceStationId());
+        }
+
+        if (spEmploymentType.getSelectedItemPosition() > 0) {
+            dto.setEmploymentType(
+                    EmploymentType.values()[spEmploymentType.getSelectedItemPosition() - 1]);
+        }
+
+        if (spWorkPlaceType.getSelectedItemPosition() > 0) {
+            dto.setWorkPlaceType(
+                    WorkPlaceType.values()[spWorkPlaceType.getSelectedItemPosition() - 1]);
+        }
+        dto.setActive(true);
+
+        jobRepository.searchJobs(dto, new Callback<List<JobResponseDTO>>() {
+            @Override
+            public void onResponse(Call<List<JobResponseDTO>> call, Response<List<JobResponseDTO>> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<List<JobResponseDTO>> call, Throwable t) {
+
+            }
+        });
+
+
     }
 
 
