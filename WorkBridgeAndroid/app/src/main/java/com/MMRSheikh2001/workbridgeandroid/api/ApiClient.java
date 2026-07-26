@@ -4,7 +4,12 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.Strictness;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -17,7 +22,7 @@ public class ApiClient {
 
 
     // Emulator
-  private static final String BASE_URL = "http://10.0.2.2:8090/";
+ //     private static final String BASE_URL = "http://10.0.2.2:8090/";
 
     // Real Device
   //   private static final String BASE_URL = "http://192.168.88.245:8090/";
@@ -27,7 +32,7 @@ public class ApiClient {
 
     // Real Device via USB (After running adb reverse)
    //  private static final String BASE_URL = "http://127.0.0.1:8090/";
- //    private static final String BASE_URL =   "http://localhost:8090/";
+     private static final String BASE_URL =   "http://localhost:8090/";
 // Note: You can also use "http://localhost:8090/"
     //commmand
     //     & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" -d reverse tcp:8090 tcp:8090
@@ -55,8 +60,19 @@ public class ApiClient {
                     .build();
 
             Gson gson = new GsonBuilder()
-                    .setLenient()
+                    .setStrictness(Strictness.LENIENT)
+
+                    // 1. Handles applicationDeadline ("2026-07-23")
+                    .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context1) ->
+                            LocalDate.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE)
+                    )
+
+                    // 2. Handles createdAt and updatedAt ("2026-07-10T23:28:58.506168")
+                    .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (json, typeOfT, context1) ->
+                            LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    )
                     .create();
+
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)

@@ -12,8 +12,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.MMRSheikh2001.workbridgeandroid.adapter.JobAdapter;
 import com.MMRSheikh2001.workbridgeandroid.enums.EmploymentType;
 import com.MMRSheikh2001.workbridgeandroid.enums.WorkPlaceType;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.repository.CategoryRepository;
@@ -53,6 +55,8 @@ public class JobListActivity extends AppCompatActivity {
 
     private MaterialButton btnSearch;
 
+    private MaterialButton btnReset;
+
     private RecyclerView rvJobs;
 
     private CategoryRepository categoryRepository;
@@ -68,6 +72,10 @@ public class JobListActivity extends AppCompatActivity {
     private List<DivisionResponseDTO> divisionList;
     private List<DistrictResponseDTO> districtList;
     private List<PoliceStationResponseDTO> policeStationList;
+
+    private List<JobResponseDTO> jobList = new ArrayList<>();
+
+    private JobAdapter jobAdapter;
 
 
     @Override
@@ -87,7 +95,9 @@ public class JobListActivity extends AppCompatActivity {
 
         setSpinnerListeners();
 
-        btnSearch.setOnClickListener(v->search());
+        btnSearch.setOnClickListener(v -> search());
+
+        btnReset.setOnClickListener(v -> resetFilters());
 
     }
 
@@ -105,8 +115,28 @@ public class JobListActivity extends AppCompatActivity {
         spWorkPlaceType = findViewById(R.id.spWorkPlaceType);
 
         btnSearch = findViewById(R.id.btnSearch);
+        btnReset = findViewById(R.id.btnReset);
 
         rvJobs = findViewById(R.id.rvJobs);
+
+        rvJobs.setLayoutManager(new LinearLayoutManager(this));
+
+        jobAdapter = new JobAdapter(
+                this,
+                jobList,
+                job -> {
+
+                    // Open Job Details later
+
+                    Toast.makeText(
+                            this,
+                            job.getTitle(),
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                });
+
+        rvJobs.setAdapter(jobAdapter);
 
         categoryRepository = new CategoryRepository(this);
         countryRepository = new CountryRepository(this);
@@ -467,7 +497,7 @@ public class JobListActivity extends AppCompatActivity {
         spPoliceStation.setAdapter(adapter);
     }
 
-    private  void search(){
+    private void search() {
 
         JobSearchRequestDTO dto = new JobSearchRequestDTO();
 
@@ -512,16 +542,62 @@ public class JobListActivity extends AppCompatActivity {
         jobRepository.searchJobs(dto, new Callback<List<JobResponseDTO>>() {
             @Override
             public void onResponse(Call<List<JobResponseDTO>> call, Response<List<JobResponseDTO>> response) {
+                btnSearch.setEnabled(true);
+
+                if (!response.isSuccessful()) {
+                    Toast.makeText(JobListActivity.this,
+                            "Search failed",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                jobList.clear();
+
+                if (response.body() != null) {
+                    jobList.addAll(response.body());
+                }
+                jobAdapter.notifyDataSetChanged();
+
 
             }
 
             @Override
             public void onFailure(Call<List<JobResponseDTO>> call, Throwable t) {
+                btnSearch.setEnabled(true);
 
+                Toast.makeText(JobListActivity.this,
+                        "Unable to connect to server",
+                        Toast.LENGTH_SHORT).show();
+
+                t.printStackTrace();
             }
         });
 
 
+    }
+
+    private void resetFilters() {
+
+
+        etKeyword.setText("");
+
+        spCategory.setSelection(0);
+        spCountry.setSelection(0);
+
+        clearDivision();
+        clearDistrict();
+        clearPoliceStation();
+
+        spEmploymentType.setSelection(0);
+        spWorkPlaceType.setSelection(0);
+
+        jobList.clear();
+        jobAdapter.notifyDataSetChanged();
+
+        Toast.makeText(this,
+                        "Filters reset",
+                        Toast.LENGTH_SHORT)
+                .show();
     }
 
 
