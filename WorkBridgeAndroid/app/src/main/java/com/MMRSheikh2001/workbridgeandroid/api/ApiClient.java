@@ -20,24 +20,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
 
-
     // Emulator
- //     private static final String BASE_URL = "http://10.0.2.2:8090/";
+    //     private static final String BASE_URL = "http://10.0.2.2:8090/";
 
     // Real Device
-  //   private static final String BASE_URL = "http://192.168.88.245:8090/";
+    //   private static final String BASE_URL = "http://192.168.88.245:8090/";
 
-     //Home
+    //Home
 //   private static final String BASE_URL = "http://192.168.0.105:8090/";
 
     // Real Device via USB (After running adb reverse)
-   //  private static final String BASE_URL = "http://127.0.0.1:8090/";
-     private static final String BASE_URL =   "http://localhost:8090/";
+    //  private static final String BASE_URL = "http://127.0.0.1:8090/";
+    private static final String BASE_URL = "http://localhost:8090/";
 // Note: You can also use "http://localhost:8090/"
     //commmand
     //     & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" -d reverse tcp:8090 tcp:8090
-
-
 
 
     private static Retrofit retrofit;
@@ -83,4 +80,13 @@ public class ApiClient {
 
         return retrofit.create(ApiService.class);
     }
+
+    public static String getCompanyLogoUrl(String fileName) {
+        return BASE_URL + "api/files/companyprofiles/" + fileName;
+    }
+
+    public static String getUserProfileImage(String fileName) {
+        return BASE_URL + "api/files/userprofiles/" + fileName;
+    }
+
 }
