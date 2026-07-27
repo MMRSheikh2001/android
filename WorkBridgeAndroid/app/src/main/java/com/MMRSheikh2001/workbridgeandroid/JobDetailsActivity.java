@@ -2,19 +2,30 @@ package com.MMRSheikh2001.workbridgeandroid;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.MMRSheikh2001.workbridgeandroid.repository.JobRepository;
 
 public class JobDetailsActivity extends AppCompatActivity {
+
+    private Long jobId;
+
+    private JobRepository jobRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_job_details);
+        jobRepository=new JobRepository(this);
+        jobId=getIntent().getLongExtra("JOB_ID",0);
+        if(jobId!=0){
+            loadJobDetails();
+        }
+
+    }
+
+    private void loadJobDetails(){
 
     }
 }
