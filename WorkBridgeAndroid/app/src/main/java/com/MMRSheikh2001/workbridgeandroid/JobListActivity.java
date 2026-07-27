@@ -1,5 +1,6 @@
 package com.MMRSheikh2001.workbridgeandroid;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -126,13 +127,11 @@ public class JobListActivity extends AppCompatActivity {
                 jobList,
                 job -> {
 
-                    // Open Job Details later
+                    Intent intent=new Intent(JobListActivity.this
+                    , JobDetailsActivity.class);
+                    intent.putExtra("JOB_ID",job.getId());
+                    startActivity(intent);
 
-                    Toast.makeText(
-                            this,
-                            job.getTitle(),
-                            Toast.LENGTH_SHORT
-                    ).show();
 
                 });
 

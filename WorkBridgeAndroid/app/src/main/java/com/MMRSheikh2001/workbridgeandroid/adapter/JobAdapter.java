@@ -21,6 +21,9 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
     private final Context context;
     private final List<JobResponseDTO> jobList;
 
+    public interface OnJobClickListener {
+        void onJobClick(JobResponseDTO job);
+    }
     private final OnJobClickListener listener;
 
     public JobAdapter(Context context,
@@ -125,10 +128,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobViewHolder> {
 
     }
 
-    public interface OnJobClickListener {
 
-        void onJobClick(JobResponseDTO job);
-
-    }
 
 }
