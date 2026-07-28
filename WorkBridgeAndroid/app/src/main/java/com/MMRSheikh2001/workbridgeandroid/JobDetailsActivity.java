@@ -8,8 +8,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
+import com.MMRSheikh2001.workbridgeandroid.repository.JobApplicationRepository;
 import com.MMRSheikh2001.workbridgeandroid.repository.JobRepository;
+import com.MMRSheikh2001.workbridgeandroid.request.JobApplicationRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 
@@ -18,11 +23,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class JobDetailsActivity extends AppCompatActivity {
-
-
-
-
-
 
 
     private Long jobId;
@@ -47,6 +47,12 @@ public class JobDetailsActivity extends AppCompatActivity {
     private ImageView imgCompanyLogo;
 
     private MaterialButton btnApply;
+
+    private JobApplicationRepository jobApplicationRepository;
+
+    private SessionManager sessionManager;
+
+    private JobResponseDTO currentJob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,12 @@ public class JobDetailsActivity extends AppCompatActivity {
         imgCompanyLogo = findViewById(R.id.imgCompanyLogo);
 
         btnApply = findViewById(R.id.btnApply);
+
+        jobRepository = new JobRepository(this);
+        jobApplicationRepository = new JobApplicationRepository(this);
+        sessionManager = new SessionManager(this);
+
+
     }
 
     private void loadJobDetails() {
@@ -171,6 +183,120 @@ public class JobDetailsActivity extends AppCompatActivity {
                     .into(imgCompanyLogo);
         }
 
+        currentJob = job;
+
+        checkAlreadyApplied();
+
+        btnApply.setOnClickListener(v -> applyJob());
+
+    }
+
+
+    private void applyJob() {
+
+        LoginResponseDTO login = sessionManager.getUser();
+
+        if (login == null) {
+            Toast.makeText(this,
+                    "Please login first",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JobApplicationRequestDTO dto = new JobApplicationRequestDTO();
+
+        dto.setJobId(currentJob.getId());
+        dto.setUserProfileId(login.getProfileId());
+
+        btnApply.setEnabled(false);
+
+        jobApplicationRepository.applyJob(dto,
+                new Callback<JobApplicationResponseDTO>() {
+
+                    @Override
+                    public void onResponse(Call<JobApplicationResponseDTO> call,
+                                           Response<JobApplicationResponseDTO> response) {
+
+                        btnApply.setEnabled(true);
+
+                        if (!response.isSuccessful()) {
+
+                            Toast.makeText(JobDetailsActivity.this,
+                                    "Application failed",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Toast.makeText(JobDetailsActivity.this,
+                                "Application submitted successfully",
+                                Toast.LENGTH_SHORT).show();
+
+                        btnApply.setText("Applied");
+                        btnApply.setEnabled(false);
+
+                        checkAlreadyApplied();
+                    }
+
+                    @Override
+                    public void onFailure(Call<JobApplicationResponseDTO> call,
+                                          Throwable t) {
+
+                        btnApply.setEnabled(true);
+
+                        Toast.makeText(JobDetailsActivity.this,
+                                "Unable to connect to server",
+                                Toast.LENGTH_SHORT).show();
+
+                        t.printStackTrace();
+                    }
+                });
+    }
+
+
+    private void checkAlreadyApplied() {
+
+        LoginResponseDTO login = sessionManager.getUser();
+
+        if (login == null) {
+            return;
+        }
+
+        btnApply.setEnabled(false);
+        btnApply.setText("Checking...");
+
+        jobApplicationRepository.existsApplication(
+                currentJob.getId(),
+                login.getProfileId(),
+                new Callback<Boolean>() {
+
+                    @Override
+                    public void onResponse(Call<Boolean> call,
+                                           Response<Boolean> response) {
+
+                        if (!response.isSuccessful() || response.body() == null) {
+                            return;
+                        }
+
+                        boolean applied = response.body();
+
+                        if (applied) {
+                            btnApply.setText("Applied");
+                            btnApply.setEnabled(false);
+                        } else {
+                            btnApply.setText("Apply Now");
+                            btnApply.setEnabled(true);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call,
+                                          Throwable t) {
+
+                        Toast.makeText(JobDetailsActivity.this,
+                                "Unable to verify application status",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
