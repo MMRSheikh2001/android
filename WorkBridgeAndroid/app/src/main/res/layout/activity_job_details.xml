@@ -21,6 +21,14 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <ImageView
+                android:id="@+id/imgCompanyLogo"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginBottom="16dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"/>
+
             <TextView
                 android:id="@+id/tvJobTitle"
                 android:layout_width="match_parent"

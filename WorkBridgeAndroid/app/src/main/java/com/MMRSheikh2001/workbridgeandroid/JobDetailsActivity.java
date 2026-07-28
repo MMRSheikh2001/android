@@ -1,13 +1,16 @@
 package com.MMRSheikh2001.workbridgeandroid;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
 import com.MMRSheikh2001.workbridgeandroid.repository.JobRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 
 import retrofit2.Call;
@@ -15,6 +18,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class JobDetailsActivity extends AppCompatActivity {
+
+
+
+
+
+
 
     private Long jobId;
 
@@ -34,6 +43,8 @@ public class JobDetailsActivity extends AppCompatActivity {
     private TextView tvExperience;
     private TextView tvAdditional;
     private TextView tvBenefits;
+
+    private ImageView imgCompanyLogo;
 
     private MaterialButton btnApply;
 
@@ -66,6 +77,8 @@ public class JobDetailsActivity extends AppCompatActivity {
         tvExperience = findViewById(R.id.tvExperience);
         tvAdditional = findViewById(R.id.tvAdditional);
         tvBenefits = findViewById(R.id.tvBenefits);
+
+        imgCompanyLogo = findViewById(R.id.imgCompanyLogo);
 
         btnApply = findViewById(R.id.btnApply);
     }
@@ -142,6 +155,22 @@ public class JobDetailsActivity extends AppCompatActivity {
         tvAdditional.setText(job.getAdditionalRequirements());
 
         tvBenefits.setText(job.getBenefits());
+
+        String logo = job.getCompanyLogo();
+
+        if (logo != null && !logo.isEmpty()) {
+
+            String imageUrl = ApiClient.BASE_URL
+                    + "api/files/companyprofiles/"
+                    + logo;
+
+            Glide.with(this)
+                    .load(ApiClient.getCompanyLogoUrl(job.getCompanyLogo()))
+                    .placeholder(R.drawable.ic_company)
+                    .error(R.drawable.ic_company)
+                    .into(imgCompanyLogo);
+        }
+
     }
 
 
