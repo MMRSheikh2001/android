@@ -71,6 +71,12 @@ public class HomeActivity extends AppCompatActivity {
 
     private void goToMyApplications(){
 
+        Intent intent = new Intent(
+                HomeActivity.this,
+                MyApplications.class);
+
+        startActivity(intent);
+
     }
     private void goToMyProfile(){
 
