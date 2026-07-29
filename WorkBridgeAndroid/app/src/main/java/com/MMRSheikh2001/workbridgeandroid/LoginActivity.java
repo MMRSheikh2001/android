@@ -29,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextView tvForgotPassword;
 
+    private TextView tvRegister;
+
     private AuthRepository authRepository;
 
     private SessionManager sessionManager;
@@ -40,6 +42,10 @@ public class LoginActivity extends AppCompatActivity {
         init();
 
         btnLogin.setOnClickListener(v -> login());
+        tvForgotPassword.setOnClickListener(v -> goToForgotPassword());
+
+        tvRegister.setOnClickListener(v -> goToRegister());
+
     }
 
     private void init() {
@@ -47,6 +53,8 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
+        tvRegister = findViewById(R.id.tvRegister);
+
         authRepository = new AuthRepository(this);
         sessionManager = new SessionManager(this);
     }
@@ -109,6 +117,24 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void goToForgotPassword() {
+
+        Intent intent = new Intent(
+                LoginActivity.this,
+                ForgotPasswordActivity.class);
+
+        startActivity(intent);
+    }
+
+    private void goToRegister() {
+
+        Intent intent = new Intent(
+                LoginActivity.this,
+                RegisterActivity.class);
+
+        startActivity(intent);
     }
 
 
