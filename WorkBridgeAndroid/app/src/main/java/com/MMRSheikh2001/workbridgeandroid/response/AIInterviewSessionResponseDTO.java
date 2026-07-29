@@ -12,9 +12,9 @@ public class AIInterviewSessionResponseDTO {
 
     private Long applicationId;
 
-    private LocalDateTime startedAt;
+    private String startedAt;
 
-    private LocalDateTime completedAt;
+    private String completedAt;
 
     private Integer totalScore;
 

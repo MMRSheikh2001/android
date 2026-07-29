@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.MMRSheikh2001.workbridgeandroid.ApplicationDetailsActivity;
 import com.MMRSheikh2001.workbridgeandroid.MyApplications;
 import com.MMRSheikh2001.workbridgeandroid.R;
 import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
@@ -86,18 +87,16 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
             holder.imgCompany.setImageResource(R.drawable.ic_company);
         }
 
-        holder.itemView.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    context,
-                    MyApplications.class);
 
-            intent.putExtra(
-                    "APPLICATION_ID",
-                    application.getId());
+            holder.itemView.setOnClickListener(v -> {
 
-            context.startActivity(intent);
-        });
+                Intent intent = new Intent(this.context, ApplicationDetailsActivity.class);
+                intent.putExtra("APPLICATION_ID", application.getId());
+                context.startActivity(intent);
+
+            });
+
     }
 
     @Override
