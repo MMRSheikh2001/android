@@ -35,9 +35,11 @@ public class AuthRepository {
         call.enqueue(callback);
     }
 
-    public void forgotPassword(ForgotPasswordRequestDTO requestDTO, Callback<String> callback) {
-        Call<String> call = apiService.forgotPassword(requestDTO);
-        call.enqueue(callback);
+    public void forgotPassword(
+            ForgotPasswordRequestDTO requestDTO,
+            Callback<String> callback) {
+
+        apiService.forgotPassword(requestDTO).enqueue(callback);
     }
 
 

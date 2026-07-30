@@ -94,6 +94,8 @@ public class JobListActivity extends AppCompatActivity {
 
         loadWorkPlaceTypes();
 
+
+
         setSpinnerListeners();
 
         btnSearch.setOnClickListener(v -> search());
@@ -196,6 +198,8 @@ public class JobListActivity extends AppCompatActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(JobListActivity.this,
                         android.R.layout.simple_spinner_dropdown_item, names);
                 spCountry.setAdapter(adapter);
+
+                search();
             }
 
             @Override
@@ -590,8 +594,7 @@ public class JobListActivity extends AppCompatActivity {
         spEmploymentType.setSelection(0);
         spWorkPlaceType.setSelection(0);
 
-        jobList.clear();
-        jobAdapter.notifyDataSetChanged();
+        search();
 
         Toast.makeText(this,
                         "Filters reset",
