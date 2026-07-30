@@ -1,5 +1,21 @@
 package com.MMRSheikh2001.workbridgeandroid.api;
 
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.EducationRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.ExperienceRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.ExtracurricularRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.ReferenceRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.UserLanguageRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.request.UserSkillRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.EducationResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ExperienceResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ExtracurricularResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.PortfolioResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ReferenceResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeFileResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserLanguageResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserSkillResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CategoryResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CountryResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DistrictResponseDTO;
@@ -15,16 +31,25 @@ import com.MMRSheikh2001.workbridgeandroid.response.AIInterviewSessionResponseDT
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserProfileResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
 
@@ -40,6 +65,444 @@ public interface ApiService {
     //Forgot password
     @POST("api/auth/forgot-password")
     Call<String> forgotPassword(@Body ForgotPasswordRequestDTO request);
+
+
+    //=======
+    //CV Informations
+    //==========
+
+    //UserProfile
+
+
+    // Create Profile
+    @Multipart
+    @POST("api/userprofiles/")
+    Call<UserProfileResponseDTO> saveUserProfile(
+            @Part("userprofile") RequestBody userProfile,
+            @Part MultipartBody.Part image
+    );
+
+    // Get By Id
+    @GET("api/userprofiles/{id}")
+    Call<UserProfileResponseDTO> getUserProfileById(
+            @Path("id") Long id
+    );
+
+    // Get By User Id
+    @GET("api/userprofiles/user/{userId}")
+    Call<UserProfileResponseDTO> getUserProfileByUserId(
+            @Path("userId") Long userId
+    );
+
+    // Update
+    @Multipart
+    @PUT("api/userprofiles/{id}")
+    Call<UserProfileResponseDTO> updateUserProfile(
+            @Path("id") Long id,
+            @Part("userprofile") RequestBody userProfile,
+            @Part MultipartBody.Part image
+    );
+
+    // Delete Profile
+    @DELETE("api/userprofiles/{id}")
+    Call<String> deleteUserProfile(
+            @Path("id") Long id
+    );
+
+    // Delete Profile Image
+    @DELETE("api/userprofiles/{id}/image")
+    Call<String> deleteUserProfileImage(
+            @Path("id") Long id
+    );
+
+
+    //Education
+
+
+    // Save
+    @POST("api/educations/")
+    Call<EducationResponseDTO> saveEducation(
+            @Body EducationRequestDTO request);
+
+    // Get By Id
+    @GET("api/educations/{id}")
+    Call<EducationResponseDTO> getEducationById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/educations/{id}")
+    Call<EducationResponseDTO> updateEducation(
+            @Path("id") Long id,
+            @Body EducationRequestDTO request);
+
+    // Delete
+    @DELETE("api/educations/{id}")
+    Call<String> deleteEducation(
+            @Path("id") Long id);
+
+    // Get All By User Profile
+    @GET("api/educations/userprofile/{id}")
+    Call<List<EducationResponseDTO>> getEducationsByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Count By User Profile
+    @GET("api/educations/userprofile/count/{id}")
+    Call<Long> countEducationsByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    //Experience
+
+
+    // Save
+    @POST("api/experiences/")
+    Call<ExperienceResponseDTO> saveExperience(
+            @Body ExperienceRequestDTO request);
+
+    // Get By Id
+    @GET("api/experiences/{id}")
+    Call<ExperienceResponseDTO> getExperienceById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/experiences/{id}")
+    Call<ExperienceResponseDTO> updateExperience(
+            @Path("id") Long id,
+            @Body ExperienceRequestDTO request);
+
+    // Delete
+    @DELETE("api/experiences/{id}")
+    Call<String> deleteExperience(
+            @Path("id") Long id);
+
+    // Get All By User Profile
+    @GET("api/experiences/userprofile/{id}")
+    Call<List<ExperienceResponseDTO>> getExperiencesByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Count By User Profile
+    @GET("api/experiences/userprofile/count/{id}")
+    Call<Long> countExperiencesByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    //Extracurricular
+
+
+    // Save
+    @POST("api/extracurriculars/")
+    Call<ExtracurricularResponseDTO> saveExtracurricular(
+            @Body ExtracurricularRequestDTO request);
+
+    // Get By Id
+    @GET("api/extracurriculars/{id}")
+    Call<ExtracurricularResponseDTO> getExtracurricularById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/extracurriculars/{id}")
+    Call<ExtracurricularResponseDTO> updateExtracurricular(
+            @Path("id") Long id,
+            @Body ExtracurricularRequestDTO request);
+
+    // Delete
+    @DELETE("api/extracurriculars/{id}")
+    Call<String> deleteExtracurricular(
+            @Path("id") Long id);
+
+    // Get All By User Profile
+    @GET("api/extracurriculars/userprofile/{id}")
+    Call<List<ExtracurricularResponseDTO>> getExtracurricularsByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Count By User Profile
+    @GET("api/extracurriculars/userprofile/count/{id}")
+    Call<Long> countExtracurricularsByUserProfileId(
+            @Path("id") Long userProfileId);
+
+
+    //Portfolio
+
+
+    // Save
+    @Multipart
+    @POST("api/portfolios/")
+    Call<PortfolioResponseDTO> savePortfolio(
+            @Part("portfolio") RequestBody portfolio,
+            @Part MultipartBody.Part file);
+
+    // Get By Id
+    @GET("api/portfolios/{id}")
+    Call<PortfolioResponseDTO> getPortfolioById(
+            @Path("id") Long id);
+
+    // Update
+    @Multipart
+    @PUT("api/portfolios/{id}")
+    Call<PortfolioResponseDTO> updatePortfolio(
+            @Path("id") Long id,
+            @Part("portfolio") RequestBody portfolio,
+            @Part MultipartBody.Part file);
+
+    // Delete
+    @DELETE("api/portfolios/{id}")
+    Call<String> deletePortfolio(
+            @Path("id") Long id);
+
+    // Delete File
+    @DELETE("api/portfolios/{id}/file")
+    Call<String> deletePortfolioFile(
+            @Path("id") Long id);
+
+    // Get By User Profile
+    @GET("api/portfolios/userprofile/{userProfileId}")
+    Call<List<PortfolioResponseDTO>> getPortfoliosByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+    // Count
+    @GET("api/portfolios/count/userprofile/{userProfileId}")
+    Call<Long> countPortfoliosByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+
+    //Reference
+
+
+    // Save
+    @POST("api/references/")
+    Call<ReferenceResponseDTO> saveReference(
+            @Body ReferenceRequestDTO request);
+
+    // Get By Id
+    @GET("api/references/{id}")
+    Call<ReferenceResponseDTO> getReferenceById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/references/{id}")
+    Call<ReferenceResponseDTO> updateReference(
+            @Path("id") Long id,
+            @Body ReferenceRequestDTO request);
+
+    // Delete
+    @DELETE("api/references/{id}")
+    Call<String> deleteReference(
+            @Path("id") Long id);
+
+    // Get All By User Profile
+    @GET("api/references/userprofile/{id}")
+    Call<List<ReferenceResponseDTO>> getReferencesByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Count By User Profile
+    @GET("api/references/userprofile/count/{id}")
+    Call<Long> countReferencesByUserProfileId(
+            @Path("id") Long userProfileId);
+
+
+    //Training
+
+
+    // Save
+    @Multipart
+    @POST("api/trainings/")
+    Call<TrainingResponseDTO> saveTraining(
+            @Part("training") RequestBody training,
+            @Part MultipartBody.Part file);
+
+    // Get By Id
+    @GET("api/trainings/{id}")
+    Call<TrainingResponseDTO> getTrainingById(
+            @Path("id") Long id);
+
+    // Update
+    @Multipart
+    @PUT("api/trainings/{id}")
+    Call<TrainingResponseDTO> updateTraining(
+            @Path("id") Long id,
+            @Part("training") RequestBody training,
+            @Part MultipartBody.Part file);
+
+    // Delete
+    @DELETE("api/trainings/{id}")
+    Call<String> deleteTraining(
+            @Path("id") Long id);
+
+    // Delete File
+    @DELETE("api/trainings/{id}/file")
+    Call<String> deleteTrainingFile(
+            @Path("id") Long id);
+
+    // Get By User Profile
+    @GET("api/trainings/userprofile/{userProfileId}")
+    Call<List<TrainingResponseDTO>> getTrainingsByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+    // Count
+    @GET("api/trainings/count/userprofile/{userProfileId}")
+    Call<Long> countTrainingsByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+
+    //User Language
+
+
+    // Save
+    @POST("api/userlanguages/")
+    Call<UserLanguageResponseDTO> saveUserLanguage(
+            @Body UserLanguageRequestDTO request);
+
+    // Get By Id
+    @GET("api/userlanguages/{id}")
+    Call<UserLanguageResponseDTO> getUserLanguageById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/userlanguages/{id}")
+    Call<UserLanguageResponseDTO> updateUserLanguage(
+            @Path("id") Long id,
+            @Body UserLanguageRequestDTO request);
+
+    // Delete
+    @DELETE("api/userlanguages/{id}")
+    Call<String> deleteUserLanguage(
+            @Path("id") Long id);
+
+    // Get By User Profile
+    @GET("api/userlanguages/userprofile/{id}")
+    Call<List<UserLanguageResponseDTO>> getUserLanguagesByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Get By Language
+    @GET("api/userlanguages/language/{id}")
+    Call<List<UserLanguageResponseDTO>> getUserLanguagesByLanguageId(
+            @Path("id") Long languageId);
+
+    // Get By User Profile + Language
+    @GET("api/userlanguages/userprofile/{userProfileId}/language/{languageId}")
+    Call<UserLanguageResponseDTO> getUserLanguageByUserProfileAndLanguage(
+            @Path("userProfileId") Long userProfileId,
+            @Path("languageId") Long languageId);
+
+    // Delete By User Profile + Language
+    @DELETE("api/userlanguages/userprofile/{userProfileId}/language/{languageId}")
+    Call<String> deleteUserLanguageByUserProfileAndLanguage(
+            @Path("userProfileId") Long userProfileId,
+            @Path("languageId") Long languageId);
+
+    // Count
+    @GET("api/userlanguages/userprofile/count/{userProfileId}")
+    Call<Long> countUserLanguagesByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+
+    //User Skill
+
+    // ==========================
+// User Skill
+// ==========================
+
+    // Save
+    @POST("api/userskills/")
+    Call<UserSkillResponseDTO> saveUserSkill(
+            @Body UserSkillRequestDTO request);
+
+    // Get By Id
+    @GET("api/userskills/{id}")
+    Call<UserSkillResponseDTO> getUserSkillById(
+            @Path("id") Long id);
+
+    // Update
+    @PUT("api/userskills/{id}")
+    Call<UserSkillResponseDTO> updateUserSkill(
+            @Path("id") Long id,
+            @Body UserSkillRequestDTO request);
+
+    // Delete
+    @DELETE("api/userskills/{id}")
+    Call<String> deleteUserSkill(
+            @Path("id") Long id);
+
+    // Get By User Profile
+    @GET("api/userskills/userprofile/{id}")
+    Call<List<UserSkillResponseDTO>> getUserSkillsByUserProfileId(
+            @Path("id") Long userProfileId);
+
+    // Get By Skill
+    @GET("api/userskills/skill/{id}")
+    Call<List<UserSkillResponseDTO>> getUserSkillsBySkillId(
+            @Path("id") Long skillId);
+
+    // Get By Skill Category
+    @GET("api/userskills/skill/category/{id}")
+    Call<List<UserSkillResponseDTO>> getUserSkillsBySkillCategoryId(
+            @Path("id") Long categoryId);
+
+    // Get By User Profile + Skill
+    @GET("api/userskills/userprofile/{userProfileId}/skill/{skillId}")
+    Call<UserSkillResponseDTO> getUserSkillByUserProfileAndSkill(
+            @Path("userProfileId") Long userProfileId,
+            @Path("skillId") Long skillId);
+
+    // Delete By User Profile + Skill
+    @DELETE("api/userskills/userprofile/{userProfileId}/skill/{skillId}")
+    Call<String> deleteUserSkillByUserProfileAndSkill(
+            @Path("userProfileId") Long userProfileId,
+            @Path("skillId") Long skillId);
+
+    // Count
+    @GET("api/userskills/userprofile/count/{userProfileId}")
+    Call<Long> countUserSkillsByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+
+    //Resume
+
+
+    // Resume JSON
+    @GET("api/resume/{userProfileId}")
+    Call<ResumeResponseDTO> getResume(
+            @Path("userProfileId") Long userProfileId);
+
+    // Resume HTML
+    @GET("api/resume/{userProfileId}/html")
+    Call<ResponseBody> getResumeHtml(
+            @Path("userProfileId") Long userProfileId);
+
+    // Resume PDF
+    @GET("api/resume/{userProfileId}/pdf")
+    Call<ResponseBody> getResumePdf(
+            @Path("userProfileId") Long userProfileId);
+
+
+    //Resume file
+
+
+    // Upload Resume
+    @Multipart
+    @POST("api/resumes/uploadedfile/")
+    Call<ResumeFileResponseDTO> uploadResume(
+            @Query("userProfileId") Long userProfileId,
+            @Part MultipartBody.Part cv);
+
+    // Delete By Resume Id
+    @DELETE("api/resumes/uploadedfile/{id}")
+    Call<String> deleteResumeFile(
+            @Path("id") Long id);
+
+    // Get By User Profile
+    @GET("api/resumes/uploadedfile/user/{userProfileId}")
+    Call<ResumeFileResponseDTO> getResumeFileByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+    // Delete By User Profile
+    @DELETE("api/resumes/uploadedfile/user/{userProfileId}")
+    Call<String> deleteResumeFileByUserProfileId(
+            @Path("userProfileId") Long userProfileId);
+
+    // Exists
+    @GET("api/resumes/uploadedfile/exists/{userProfileId}")
+    Call<Boolean> resumeFileExists(
+            @Path("userProfileId") Long userProfileId);
+
 
     // ==========================
     // Job
@@ -109,9 +572,6 @@ public interface ApiService {
     @GET("api/ai/interview/{applicationId}")
     Call<AIInterviewSessionResponseDTO> getInterviewByApplicationId(
             @Path("applicationId") Long applicationId);
-
-
-
 
 
     // Category

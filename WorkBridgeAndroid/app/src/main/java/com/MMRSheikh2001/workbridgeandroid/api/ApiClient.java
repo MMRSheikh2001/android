@@ -32,7 +32,7 @@ public class ApiClient {
 
     // Real Device via USB (After running adb reverse)
     //  public static final String BASE_URL = "http://127.0.0.1:8090/";
- //       public static final String BASE_URL = "http://localhost:8090/";
+    //       public static final String BASE_URL = "http://localhost:8090/";
 // Note: You can also use "http://localhost:8090/"
     //commmand
     //     & "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" -d reverse tcp:8090 tcp:8090
@@ -89,6 +89,18 @@ public class ApiClient {
 
     public static String getUserProfileImage(String fileName) {
         return BASE_URL + "api/files/userprofiles/" + fileName;
+    }
+
+    public static String getResumeFile(String fileName) {
+        return BASE_URL + "api/files/resumes/" + fileName;
+    }
+
+    public static String getPortfolioFile(String fileName) {
+        return BASE_URL + "api/files/portfolios/" + fileName;
+    }
+
+    public static String getTrainingFile(String fileName) {
+        return BASE_URL + "api/files/trainings/" + fileName;
     }
 
 }
