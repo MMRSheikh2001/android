@@ -6,13 +6,16 @@ import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DistrictResponseD
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DivisionResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.PoliceStationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.SkillResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.request.ForgotPasswordRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.JobApplicationRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.JobSearchRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.LoginRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.request.UserRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.AIInterviewSessionResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
 
 import java.util.List;
 
@@ -25,9 +28,18 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
+
+    //Register
+    @POST("/api/users/register")
+    Call<UserResponseDTO> register(@Body UserRequestDTO request);
+
     //Login
     @POST("api/auth/login")
     Call<LoginResponseDTO> login(@Body LoginRequestDTO request);
+
+    //Forgot password
+    @POST("api/auth/forgot-password")
+    Call<String> forgotPassword(@Body ForgotPasswordRequestDTO request);
 
     // ==========================
     // Job
