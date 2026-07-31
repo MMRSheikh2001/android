@@ -15,9 +15,9 @@ import com.google.android.material.card.MaterialCardView;
 public class HomeActivity extends AppCompatActivity {
 
     private TextView tvWelcome;
-    private MaterialCardView cardFindJobs;
-    private MaterialCardView cardMyApplications;
-    private MaterialCardView cardProfile;
+    private MaterialButton btnFindJobs;
+    private MaterialButton btnMyApplications;
+    private MaterialButton btnProfile;
     private MaterialButton btnLogout;
     private SessionManager sessionManager;
 
@@ -39,13 +39,13 @@ public class HomeActivity extends AppCompatActivity {
     private  void init(){
         tvWelcome=findViewById(R.id.tvWelcome);
 
-        cardFindJobs=findViewById(R.id.cardFindJobs);
-        cardMyApplications=findViewById(R.id.cardApplications);
-        cardProfile=findViewById(R.id.cardProfile);
+        btnFindJobs=findViewById(R.id.btnFindJobs);
+        btnMyApplications=findViewById(R.id.btnApplications);
+        btnProfile=findViewById(R.id.btnProfile);
 
-        cardFindJobs.setOnClickListener(v->goToJobList());
-        cardMyApplications.setOnClickListener(v->goToMyApplications());
-        cardProfile.setOnClickListener(v->goToMyProfile());
+        btnFindJobs.setOnClickListener(v->goToJobList());
+        btnMyApplications.setOnClickListener(v->goToMyApplications());
+        btnProfile.setOnClickListener(v->goToMyProfile());
 
         btnLogout=findViewById(R.id.btnLogout);
 

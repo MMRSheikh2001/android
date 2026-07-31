@@ -8,6 +8,7 @@ import com.MMRSheikh2001.workbridgeandroid.request.ForgotPasswordRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.LoginRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.UserRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
 
 import retrofit2.Call;
@@ -40,6 +41,18 @@ public class AuthRepository {
             Callback<String> callback) {
 
         apiService.forgotPassword(requestDTO).enqueue(callback);
+    }
+
+    public void getUserDashboard(
+            Long userId,
+            Callback<UserDashboardDTO> callback
+    ) {
+
+        Call<UserDashboardDTO> call =
+                apiService.getUserDashboard(userId);
+
+        call.enqueue(callback);
+
     }
 
 

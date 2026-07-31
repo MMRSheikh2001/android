@@ -31,6 +31,7 @@ import com.MMRSheikh2001.workbridgeandroid.response.AIInterviewSessionResponseDT
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserProfileResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
 
@@ -65,6 +66,13 @@ public interface ApiService {
     //Forgot password
     @POST("api/auth/forgot-password")
     Call<String> forgotPassword(@Body ForgotPasswordRequestDTO request);
+
+
+    //Dashboard
+    @GET("dashboards/user/{userId}")
+    Call<UserDashboardDTO> getUserDashboard(
+            @Path("userId") Long userId
+    );
 
 
     //=======
