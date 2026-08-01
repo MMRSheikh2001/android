@@ -70,7 +70,7 @@ public interface ApiService {
 
 
     //Dashboard
-    @GET("dashboards/user/{userId}")
+    @GET("api/dashboards/user/{userId}")
     Call<UserDashboardDTO> getUserDashboard(
             @Path("userId") Long userId
     );
