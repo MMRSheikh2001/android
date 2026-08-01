@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,8 @@ public class EducationActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+
+    private TextView tvEducationCount;
 
     private FloatingActionButton fabAdd;
 
@@ -60,6 +63,7 @@ public class EducationActivity extends AppCompatActivity {
         profileId = user.getProfileId();
 
         loadEducations();
+        loadEducationCount();
 
         fabAdd.setOnClickListener(v -> {
 
@@ -88,6 +92,7 @@ public class EducationActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         layoutEmpty = findViewById(R.id.layoutEmpty);
         fabAdd = findViewById(R.id.fabAddEducation);
+        tvEducationCount=findViewById(R.id.tvEducationCount);
 
         adapter = new EducationAdapter(
                 this,
@@ -144,6 +149,7 @@ public class EducationActivity extends AppCompatActivity {
                             educationList.addAll(response.body());
 
                             adapter.notifyDataSetChanged();
+                            loadEducationCount();
 
                             if (educationList.isEmpty()) {
                                 layoutEmpty.setVisibility(View.VISIBLE);
@@ -175,6 +181,35 @@ public class EducationActivity extends AppCompatActivity {
                                 EducationActivity.this,
                                 t.getMessage(),
                                 Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+    }
+
+    private void loadEducationCount() {
+
+        repository.countEducationsByUserProfileId(
+                profileId,
+                new Callback<Long>() {
+
+                    @Override
+                    public void onResponse(Call<Long> call,
+                                           Response<Long> response) {
+
+                        if (response.isSuccessful()
+                                && response.body() != null) {
+
+                            tvEducationCount.setText("Total Education Number :"+
+                                    String.valueOf(response.body()));
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Long> call,
+                                          Throwable t) {
 
                     }
                 });
