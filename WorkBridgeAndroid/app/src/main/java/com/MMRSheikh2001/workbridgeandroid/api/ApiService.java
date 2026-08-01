@@ -12,6 +12,7 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.Extracurricul
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.PortfolioResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ReferenceResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeFileResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeImportPreviewDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserLanguageResponseDTO;
@@ -510,6 +511,21 @@ public interface ApiService {
     @GET("api/resumes/uploadedfile/exists/{userProfileId}")
     Call<Boolean> resumeFileExists(
             @Path("userProfileId") Long userProfileId);
+
+    // ==========================
+// Resume Import (AI)
+// ==========================
+
+    // Get AI Preview (Nothing saved)
+    @GET("api/resume-import/{userProfileId}")
+    Call<ResumeImportPreviewDTO> getResumeImportPreview(
+            @Path("userProfileId") Long userProfileId);
+
+    // Save Imported Resume Data
+    @POST("api/resume-import/save/{userProfileId}")
+    Call<Void> saveImportedResume(
+            @Path("userProfileId") Long userProfileId,
+            @Body ResumeImportPreviewDTO preview);
 
 
     // ==========================
