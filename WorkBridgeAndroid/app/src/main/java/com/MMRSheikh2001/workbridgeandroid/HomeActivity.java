@@ -2,15 +2,22 @@ package com.MMRSheikh2001.workbridgeandroid;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.MMRSheikh2001.workbridgeandroid.repository.AuthRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -21,12 +28,26 @@ public class HomeActivity extends AppCompatActivity {
     private MaterialButton btnLogout;
     private SessionManager sessionManager;
 
+    private TextView tvUserName;
+    private TextView tvProfileCompletion;
+    private ProgressBar progressProfile;
+
+    private TextView tvAppliedJobs;
+    private TextView tvSavedJobs;
+    private TextView tvMessages;
+    private TextView tvNotifications;
+
+    private AuthRepository authRepository;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
         init();
+
+        loadDashboard();
 
         LoginResponseDTO user=sessionManager.getUser();
         if(user!=null){
@@ -48,6 +69,19 @@ public class HomeActivity extends AppCompatActivity {
         btnProfile.setOnClickListener(v->goToMyProfile());
 
         btnLogout=findViewById(R.id.btnLogout);
+
+        tvUserName = findViewById(R.id.tvUserName);
+        tvProfileCompletion = findViewById(R.id.tvProfileCompletion);
+
+        progressProfile = findViewById(R.id.progressProfile);
+
+        tvAppliedJobs = findViewById(R.id.tvAppliedJobs);
+        tvSavedJobs = findViewById(R.id.tvSavedJobs);
+        tvMessages = findViewById(R.id.tvMessages);
+        tvNotifications = findViewById(R.id.tvNotifications);
+
+        authRepository = new AuthRepository(this);
+        sessionManager = new SessionManager(this);
 
         sessionManager=new SessionManager(this);
     }
@@ -80,6 +114,69 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void goToMyProfile(){
 
+        Intent intent = new Intent(
+                HomeActivity.this,
+                ProfileCenterActivity.class);
+
+        startActivity(intent);
+
+    }
+
+
+    //load dashboard
+    private void loadDashboard() {
+
+        Long userId = sessionManager.getUser().getUserId();
+
+        authRepository.getUserDashboard(userId,
+                new Callback<UserDashboardDTO>() {
+
+                    @Override
+                    public void onResponse(Call<UserDashboardDTO> call,
+                                           Response<UserDashboardDTO> response) {
+
+                        if (!response.isSuccessful() || response.body() == null) {
+                            Toast.makeText(HomeActivity.this,
+                                    "Failed to load dashboard",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        UserDashboardDTO dto = response.body();
+
+                        tvUserName.setText(dto.getUserName());
+
+                        int completion = dto.getProfileCompletion() == null
+                                ? 0
+                                : dto.getProfileCompletion();
+
+                        tvProfileCompletion.setText(
+                                "Profile Completion: " + completion + "%");
+
+                        progressProfile.setProgress(completion);
+
+                        tvAppliedJobs.setText(
+                                String.valueOf(dto.getAppliedJobs()));
+
+                        tvSavedJobs.setText(
+                                String.valueOf(dto.getSavedJobs()));
+
+                        tvMessages.setText(
+                                String.valueOf(dto.getUnreadMessages()));
+
+                        tvNotifications.setText(
+                                String.valueOf(dto.getUnreadNotifications()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserDashboardDTO> call,
+                                          Throwable t) {
+
+                        Toast.makeText(HomeActivity.this,
+                                "Unable to connect to server",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 
