@@ -8,7 +8,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,12 +19,20 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingRespo
 import com.MMRSheikh2001.workbridgeandroid.enums.TrainingType;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import okhttp3.MediaType;
@@ -38,7 +45,7 @@ import retrofit2.Response;
 public class EditTrainingActivity extends AppCompatActivity {
 
 
-    private Toolbar toolbar;
+    private MaterialToolbar toolbar;
 
     private TextInputEditText etTrainingName;
     private TextInputEditText etInstitution;
@@ -129,7 +136,13 @@ public class EditTrainingActivity extends AppCompatActivity {
 
         repository = new TrainingRepository(this);
         sessionManager = new SessionManager(this);
-        gson = new Gson();
+        gson = new GsonBuilder()
+                // Without this, Gson reflects over LocalDate's private fields and sends
+                // {"year":...,"month":...,"day":...} instead of "2026-08-02", which the
+                // backend rejects with "JSON parse error: Expected array or string."
+                .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context) ->
+                        src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE)))
+                .create();
 
         toolbar = findViewById(R.id.toolbar);
 
@@ -256,15 +269,30 @@ public class EditTrainingActivity extends AppCompatActivity {
 
     private void saveTraining() {
 
+        if (etTrainingName.getText().toString().trim().isEmpty()) {
+            etTrainingName.setError("Required");
+            return;
+        }
+
+        if (actTrainingType.getText().toString().trim().isEmpty()) {
+            actTrainingType.setError("Required");
+            return;
+        }
+
         TrainingRequestDTO dto = new TrainingRequestDTO();
 
         dto.setName(etTrainingName.getText().toString().trim());
         dto.setInstitution(etInstitution.getText().toString().trim());
         dto.setDescription(etDescription.getText().toString().trim());
 
-        dto.setTrainingType(
-                TrainingType.valueOf(
-                        actTrainingType.getText().toString()));
+        try {
+            dto.setTrainingType(
+                    TrainingType.valueOf(
+                            actTrainingType.getText().toString().trim()));
+        } catch (IllegalArgumentException e) {
+            actTrainingType.setError("Select a valid training type");
+            return;
+        }
 
         if (!etStartDate.getText().toString().isEmpty())
             dto.setStartDate(
@@ -293,21 +321,12 @@ public class EditTrainingActivity extends AppCompatActivity {
         MultipartBody.Part filePart = null;
 
         if (selectedFileUri != null) {
-
-            File file =
-                    new File(selectedFileUri.getPath());
-
-            RequestBody fileBody =
-                    RequestBody.create(
-                            file,
-                            MediaType.parse("*/*"));
-
-            filePart =
-                    MultipartBody.Part.createFormData(
-                            "file",
-                            file.getName(),
-                            fileBody);
-
+            try {
+                filePart = buildFilePart(selectedFileUri);
+            } catch (IOException e) {
+                Toast.makeText(this, "Could not read selected file", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         progressBar.setVisibility(android.view.View.VISIBLE);
@@ -369,6 +388,38 @@ public class EditTrainingActivity extends AppCompatActivity {
 
         }
 
+    }
+
+    private MultipartBody.Part buildFilePart(Uri uri) throws IOException {
+        String fileName = queryFileName(uri);
+        File tempFile = new File(getCacheDir(), fileName);
+
+        try (InputStream in = getContentResolver().openInputStream(uri);
+             FileOutputStream out = new FileOutputStream(tempFile)) {
+            if (in == null) throw new IOException("Unable to open selected file");
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+        }
+
+        RequestBody requestFile = RequestBody.create(tempFile, MediaType.parse("*/*"));
+        return MultipartBody.Part.createFormData("file", tempFile.getName(), requestFile);
+    }
+
+    private String queryFileName(Uri uri) {
+        String name = "certificate";
+        try (android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int nameIndex = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                if (nameIndex >= 0) {
+                    name = cursor.getString(nameIndex);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return name;
     }
 
 
