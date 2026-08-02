@@ -7,7 +7,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +17,7 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.repository.TrainingRep
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class TrainingActivity extends AppCompatActivity {
 
 
 
-    private Toolbar toolbar;
+    private MaterialToolbar toolbar;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
