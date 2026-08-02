@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
-import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +15,7 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ExperienceRes
 import com.MMRSheikh2001.workbridgeandroid.enums.EmploymentType;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
@@ -31,12 +31,10 @@ import retrofit2.Response;
 public class EditExperienceActivity extends AppCompatActivity {
 
 
-
-
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ISO_LOCAL_DATE;
 
-    private Toolbar toolbar;
+    private MaterialToolbar toolbar;
 
     private TextInputEditText etCompanyName;
     private TextInputEditText etPosition;
@@ -77,6 +75,10 @@ public class EditExperienceActivity extends AppCompatActivity {
         setupListeners();
 
         LoginResponseDTO user = sessionManager.getUser();
+        if (user == null || user.getProfileId() == null) {
+            finish();
+            return;
+        }
         profileId = user.getProfileId();
 
         if (getIntent().hasExtra("experienceId")) {
@@ -88,7 +90,6 @@ public class EditExperienceActivity extends AppCompatActivity {
         }
 
     }
-
 
 
     private void bindViews() {
@@ -115,9 +116,6 @@ public class EditExperienceActivity extends AppCompatActivity {
     private void setupToolbar() {
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
-    }
-
-    private void setSupportActionBar(Toolbar toolbar) {
     }
 
     private void setupDropdown() {
@@ -248,6 +246,11 @@ public class EditExperienceActivity extends AppCompatActivity {
             return;
         }
 
+        if (TextUtils.isEmpty(actEmploymentType.getText())) {
+            actEmploymentType.setError("Required");
+            return;
+        }
+
         ExperienceRequestDTO request =
                 new ExperienceRequestDTO();
 
@@ -263,9 +266,14 @@ public class EditExperienceActivity extends AppCompatActivity {
         request.setAchievements(
                 etAchievements.getText().toString().trim());
 
-        request.setEmploymentType(
-                EmploymentType.valueOf(
-                        actEmploymentType.getText().toString()));
+        try {
+            request.setEmploymentType(
+                    EmploymentType.valueOf(
+                            actEmploymentType.getText().toString().trim()));
+        } catch (IllegalArgumentException e) {
+            actEmploymentType.setError("Select a valid employment type");
+            return;
+        }
 
         if (!TextUtils.isEmpty(etStartDate.getText())) {
             request.setStartDate(
@@ -323,7 +331,6 @@ public class EditExperienceActivity extends AppCompatActivity {
                     callback);
         }
     }
-
 
 
 }
