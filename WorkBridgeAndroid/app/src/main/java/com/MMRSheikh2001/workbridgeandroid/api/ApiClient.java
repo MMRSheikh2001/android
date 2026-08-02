@@ -5,6 +5,8 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializer;
 import com.google.gson.Strictness;
 
 import java.time.LocalDate;
@@ -60,14 +62,17 @@ public class ApiClient {
             Gson gson = new GsonBuilder()
                     .setStrictness(Strictness.LENIENT)
 
-                    // 1. Handles applicationDeadline ("2026-07-23")
-                    .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context1) ->
+                     .registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, typeOfT, context1) ->
                             LocalDate.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE)
+                    ) .registerTypeAdapter(LocalDate.class, (JsonSerializer<LocalDate>) (src, typeOfSrc, context1) ->
+                            src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE))
                     )
 
-                    // 2. Handles createdAt and updatedAt ("2026-07-10T23:28:58.506168")
                     .registerTypeAdapter(LocalDateTime.class, (JsonDeserializer<LocalDateTime>) (json, typeOfT, context1) ->
                             LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                    )
+                    .registerTypeAdapter(LocalDateTime.class, (JsonSerializer<LocalDateTime>) (src, typeOfSrc, context1) ->
+                            src == null ? null : new JsonPrimitive(src.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                     )
                     .create();
 
