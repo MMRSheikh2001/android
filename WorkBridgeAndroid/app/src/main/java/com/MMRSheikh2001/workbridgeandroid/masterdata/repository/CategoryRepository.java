@@ -24,4 +24,10 @@ public class CategoryRepository {
         apiService.getAllCategories().enqueue(callback);
     }
 
+    public void getCategoryById(Long id,
+            Callback<CategoryResponseDTO> callback){
+
+        apiService.getCategoryById(id).enqueue(callback);
+    }
+
 }

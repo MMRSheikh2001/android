@@ -21,6 +21,7 @@ import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CategoryResponseD
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CountryResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DistrictResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DivisionResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.masterdata.response.LanguageResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.PoliceStationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.SkillResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.ForgotPasswordRequestDTO;
@@ -597,14 +598,35 @@ public interface ApiService {
     Call<AIInterviewSessionResponseDTO> getInterviewByApplicationId(
             @Path("applicationId") Long applicationId);
 
+    // ==============================
+// Language
+// ==============================
+
+    @GET("api/languages/")
+    Call<List<LanguageResponseDTO>> getAllLanguages();
+
+    @GET("api/languages/{id}")
+    Call<LanguageResponseDTO> getLanguageById(
+            @Path("id") Long id);
+
 
     // Category
     @GET("api/categories/")
     Call<List<CategoryResponseDTO>> getAllCategories();
 
+    @GET("api/categories/{id}")
+    Call<CategoryResponseDTO> getCategoryById(
+            @Path("id") Long id
+    );
+
     // Skill
     @GET("api/skills/")
     Call<List<SkillResponseDTO>> getAllSkills();
+
+    @GET("api/skills/{id}")
+    Call<SkillResponseDTO> getSkillById(
+            @Path("id") Long id
+    );
 
     @GET("api/skills/category/{id}")
     Call<List<SkillResponseDTO>> getSkillsByCategoryId(@Path("id") Long id);

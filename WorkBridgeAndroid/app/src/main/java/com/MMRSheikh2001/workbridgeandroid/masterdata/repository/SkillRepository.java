@@ -25,6 +25,12 @@ public class SkillRepository {
         apiService.getAllSkills().enqueue(callback);
     }
 
+    public void getSkillById(Long id,
+                             Callback<SkillResponseDTO> callback) {
+
+        apiService.getSkillById(id).enqueue(callback);
+    }
+
     public void getSkillsByCategoryId(
             Long categoryId,
             Callback<List<SkillResponseDTO>> callback) {
