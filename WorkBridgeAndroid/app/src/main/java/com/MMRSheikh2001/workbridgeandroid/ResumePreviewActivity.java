@@ -19,6 +19,7 @@ import com.MMRSheikh2001.workbridgeandroid.adapter.TrainingAdapter;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.repository.ResumeImportRepository;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.EducationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ExperienceResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ExtracurricularResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.PortfolioResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ReferenceResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeImportPreviewDTO;
@@ -360,9 +361,6 @@ public class ResumePreviewActivity extends AppCompatActivity {
                                 public void onEdit(ExperienceResponseDTO experience) {
                                 }
 
-                                @Override
-                                public void onDelete() {
-                                }
 
                             });
 
@@ -387,9 +385,6 @@ public class ResumePreviewActivity extends AppCompatActivity {
                                 public void onEdit(TrainingResponseDTO training) {
                                 }
 
-                                @Override
-                                public void onDelete() {
-                                }
 
                             });
 
@@ -413,9 +408,6 @@ public class ResumePreviewActivity extends AppCompatActivity {
                                 public void onEdit(PortfolioResponseDTO portfolio) {
                                 }
 
-                                @Override
-                                public void onDelete() {
-                                }
 
                             });
 
@@ -440,9 +432,6 @@ public class ResumePreviewActivity extends AppCompatActivity {
                                 public void onEdit(ReferenceResponseDTO reference) {
                                 }
 
-                                @Override
-                                public void onDelete() {
-                                }
 
                             });
 
@@ -450,8 +439,8 @@ public class ResumePreviewActivity extends AppCompatActivity {
 
         }
         //==========================================
-        // Extracurricular
-        //==========================================
+// Extracurricular
+//==========================================
 
         if (preview.getExtracurriculars() != null &&
                 !preview.getExtracurriculars().isEmpty()) {
@@ -459,88 +448,96 @@ public class ResumePreviewActivity extends AppCompatActivity {
             ExtracurricularAdapter extracurricularAdapter =
                     new ExtracurricularAdapter(
                             this,
-                            preview.getExtracurriculars()
-                    );
+                            preview.getExtracurriculars(),
+                            new ExtracurricularAdapter.OnExtracurricularClickListener() {
+
+                                @Override
+                                public void onEdit(ExtracurricularResponseDTO extracurricular) {
+                                }
+
+
+                            });
 
             rvExtracurricular.setAdapter(extracurricularAdapter);
 
         }
 
-    }
 
+        //==========================================================
+        // Import Resume
+        //==========================================================
 
-    //==========================================================
-    // Import Resume
-    //==========================================================
+        private void importResume() {
 
-    private void importResume() {
+            if (preview == null) {
 
-        if (preview == null) {
+                Toast.makeText(
+                        this,
+                        "Nothing to import.",
+                        Toast.LENGTH_SHORT
+                ).show();
 
-            Toast.makeText(
-                    this,
-                    "Nothing to import.",
-                    Toast.LENGTH_SHORT
-            ).show();
+                return;
+            }
 
-            return;
-        }
+            btnImport.setEnabled(false);
+            btnImport.setText("Importing...");
 
-        btnImport.setEnabled(false);
-        btnImport.setText("Importing...");
+            repository.saveImportedResume(
+                    userProfileId,
+                    preview,
+                    new Callback<Void>() {
 
-        repository.saveImportedResume(
-                userProfileId,
-                preview,
-                new Callback<Void>() {
+                        @Override
+                        public void onResponse(
+                                Call<Void> call,
+                                Response<Void> response) {
 
-                    @Override
-                    public void onResponse(
-                            Call<Void> call,
-                            Response<Void> response) {
+                            btnImport.setEnabled(true);
+                            btnImport.setText("Import Resume");
 
-                        btnImport.setEnabled(true);
-                        btnImport.setText("Import Resume");
+                            if (response.isSuccessful()) {
 
-                        if (response.isSuccessful()) {
+                                Toast.makeText(
+                                        ResumePreviewActivity.this,
+                                        "Resume imported successfully.",
+                                        Toast.LENGTH_LONG
+                                ).show();
+
+                                finish();
+
+                            } else {
+
+                                Toast.makeText(
+                                        ResumePreviewActivity.this,
+                                        "Failed to import resume.",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(
+                                Call<Void> call,
+                                Throwable t) {
+
+                            btnImport.setEnabled(true);
+                            btnImport.setText("Import Resume");
 
                             Toast.makeText(
                                     ResumePreviewActivity.this,
-                                    "Resume imported successfully.",
+                                    "Network Error : " + t.getMessage(),
                                     Toast.LENGTH_LONG
-                            ).show();
-
-                            finish();
-
-                        } else {
-
-                            Toast.makeText(
-                                    ResumePreviewActivity.this,
-                                    "Failed to import resume.",
-                                    Toast.LENGTH_SHORT
                             ).show();
 
                         }
 
-                    }
+                    });
 
-                    @Override
-                    public void onFailure(
-                            Call<Void> call,
-                            Throwable t) {
+        }
 
-                        btnImport.setEnabled(true);
-                        btnImport.setText("Import Resume");
-
-                        Toast.makeText(
-                                ResumePreviewActivity.this,
-                                "Network Error : " + t.getMessage(),
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                    }
-
-                });
 
     }
 
