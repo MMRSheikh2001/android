@@ -35,7 +35,6 @@ import retrofit2.Response;
 public class ResumePreviewActivity extends AppCompatActivity {
 
 
-
     //==========================================================
     // Views
     //==========================================================
@@ -77,13 +76,10 @@ public class ResumePreviewActivity extends AppCompatActivity {
     private ResumeImportPreviewDTO preview;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resume_preview);
-
 
 
         repository = new ResumeImportRepository(this);
@@ -106,12 +102,7 @@ public class ResumePreviewActivity extends AppCompatActivity {
         loadPreview();
 
 
-
-
-
-
     }
-
 
 
     //==========================================================
@@ -462,86 +453,86 @@ public class ResumePreviewActivity extends AppCompatActivity {
 
         }
 
+    }
+    //==========================================================
+    // Import Resume
+    //==========================================================
 
-        //==========================================================
-        // Import Resume
-        //==========================================================
+    private void importResume() {
 
-        private void importResume() {
+        if (preview == null) {
 
-            if (preview == null) {
+            Toast.makeText(
+                    this,
+                    "Nothing to import.",
+                    Toast.LENGTH_SHORT
+            ).show();
 
-                Toast.makeText(
-                        this,
-                        "Nothing to import.",
-                        Toast.LENGTH_SHORT
-                ).show();
+            return;
+        }
 
-                return;
-            }
+        btnImport.setEnabled(false);
+        btnImport.setText("Importing...");
 
-            btnImport.setEnabled(false);
-            btnImport.setText("Importing...");
+        repository.saveImportedResume(
+                userProfileId,
+                preview,
+                new Callback<Void>() {
 
-            repository.saveImportedResume(
-                    userProfileId,
-                    preview,
-                    new Callback<Void>() {
+                    @Override
+                    public void onResponse(
+                            Call<Void> call,
+                            Response<Void> response) {
 
-                        @Override
-                        public void onResponse(
-                                Call<Void> call,
-                                Response<Void> response) {
+                        btnImport.setEnabled(true);
+                        btnImport.setText("Import Resume");
 
-                            btnImport.setEnabled(true);
-                            btnImport.setText("Import Resume");
-
-                            if (response.isSuccessful()) {
-
-                                Toast.makeText(
-                                        ResumePreviewActivity.this,
-                                        "Resume imported successfully.",
-                                        Toast.LENGTH_LONG
-                                ).show();
-
-                                finish();
-
-                            } else {
-
-                                Toast.makeText(
-                                        ResumePreviewActivity.this,
-                                        "Failed to import resume.",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(
-                                Call<Void> call,
-                                Throwable t) {
-
-                            btnImport.setEnabled(true);
-                            btnImport.setText("Import Resume");
+                        if (response.isSuccessful()) {
 
                             Toast.makeText(
                                     ResumePreviewActivity.this,
-                                    "Network Error : " + t.getMessage(),
+                                    "Resume imported successfully.",
                                     Toast.LENGTH_LONG
+                            ).show();
+
+                            finish();
+
+                        } else {
+
+                            Toast.makeText(
+                                    ResumePreviewActivity.this,
+                                    "Failed to import resume.",
+                                    Toast.LENGTH_SHORT
                             ).show();
 
                         }
 
-                    });
+                    }
 
-        }
+                    @Override
+                    public void onFailure(
+                            Call<Void> call,
+                            Throwable t) {
 
+                        btnImport.setEnabled(true);
+                        btnImport.setText("Import Resume");
+
+                        Toast.makeText(
+                                ResumePreviewActivity.this,
+                                "Network Error : " + t.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
+
+                    }
+
+                });
 
     }
 
+
 }
+
+
 
 
 
