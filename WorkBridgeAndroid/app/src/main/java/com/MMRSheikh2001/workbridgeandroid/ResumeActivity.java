@@ -31,6 +31,7 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeRespons
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserLanguageResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserSkillResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
@@ -90,8 +91,15 @@ public class ResumeActivity extends AppCompatActivity {
 
         repository = new ResumeRepository(this);
 
-        userProfileId = getIntent()
-                .getLongExtra("userProfileId", 0);
+        SessionManager sessionManager = new SessionManager(this);
+
+        if (sessionManager.getUser() == null || sessionManager.getUser().getProfileId() == null) {
+            Toast.makeText(this, "No profile found. Please log in again.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        userProfileId = sessionManager.getUser().getProfileId();
 
         initializeViews();
 
@@ -186,6 +194,12 @@ public class ResumeActivity extends AppCompatActivity {
                         if (!response.isSuccessful()
                                 || response.body() == null) {
 
+                            Toast.makeText(
+                                    ResumeActivity.this,
+                                    "Failed to load resume (code " + response.code() + ")",
+                                    Toast.LENGTH_LONG
+                            ).show();
+
                             return;
                         }
 
@@ -201,6 +215,12 @@ public class ResumeActivity extends AppCompatActivity {
                     public void onFailure(
                             Call<ResumeResponseDTO> call,
                             Throwable t) {
+
+                        Toast.makeText(
+                                ResumeActivity.this,
+                                "Network error: " + t.getMessage(),
+                                Toast.LENGTH_LONG
+                        ).show();
 
                     }
 
@@ -592,11 +612,3 @@ public class ResumeActivity extends AppCompatActivity {
     }
 
 }
-
-
-
-
-
-
-
-
