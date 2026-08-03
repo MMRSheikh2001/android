@@ -53,6 +53,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
 
 public interface ApiService {
 
@@ -478,6 +479,7 @@ public interface ApiService {
             @Path("userProfileId") Long userProfileId);
 
     // Resume PDF
+    @Streaming
     @GET("api/resume/{userProfileId}/pdf")
     Call<ResponseBody> getResumePdf(
             @Path("userProfileId") Long userProfileId);
@@ -527,6 +529,9 @@ public interface ApiService {
     Call<Void> saveImportedResume(
             @Path("userProfileId") Long userProfileId,
             @Body ResumeImportPreviewDTO preview);
+
+
+
 
 
     // ==========================

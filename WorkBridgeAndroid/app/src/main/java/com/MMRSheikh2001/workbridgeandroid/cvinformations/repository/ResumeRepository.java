@@ -5,8 +5,10 @@ import android.content.Context;
 import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
 import com.MMRSheikh2001.workbridgeandroid.api.ApiService;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeFileResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeResponseDTO;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Callback;
 
 public class ResumeRepository {
@@ -61,6 +63,45 @@ public class ResumeRepository {
             Callback<Boolean> callback) {
 
         apiService.resumeFileExists(userProfileId)
+                .enqueue(callback);
+    }
+
+
+
+
+    //======================================================
+    // Resume JSON
+    //======================================================
+
+    public void getResume(
+            Long userProfileId,
+            Callback<ResumeResponseDTO> callback) {
+
+        apiService.getResume(userProfileId)
+                .enqueue(callback);
+    }
+
+    //======================================================
+    // Resume HTML
+    //======================================================
+
+    public void getResumeHtml(
+            Long userProfileId,
+            Callback<ResponseBody> callback) {
+
+        apiService.getResumeHtml(userProfileId)
+                .enqueue(callback);
+    }
+
+    //======================================================
+    // Resume PDF
+    //======================================================
+
+    public void downloadResumePdf(
+            Long userProfileId,
+            Callback<ResponseBody> callback) {
+
+        apiService.getResumePdf(userProfileId)
                 .enqueue(callback);
     }
 
