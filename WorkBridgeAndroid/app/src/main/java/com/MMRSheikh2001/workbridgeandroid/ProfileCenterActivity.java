@@ -8,7 +8,15 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.MMRSheikh2001.workbridgeandroid.repository.AuthRepository;
+import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
+import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.google.android.material.card.MaterialCardView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProfileCenterActivity extends AppCompatActivity {
 
@@ -28,6 +36,9 @@ public class ProfileCenterActivity extends AppCompatActivity {
     private MaterialCardView cardResumeFile;
     private MaterialCardView cardResumePreview;
 
+    private AuthRepository authRepository;
+
+    private SessionManager sessionManager;
 
 
     @Override
@@ -40,6 +51,12 @@ public class ProfileCenterActivity extends AppCompatActivity {
         init();
 
         setClickListeners();
+
+        sessionManager = new SessionManager(this);
+
+        authRepository = new AuthRepository(this);
+
+        loadProfileCompletion();
 
     }
 
@@ -136,6 +153,54 @@ public class ProfileCenterActivity extends AppCompatActivity {
     }
 
 
+    private void loadProfileCompletion() {
+
+        LoginResponseDTO login = sessionManager.getUser();
+
+        if (login == null) {
+            return;
+        }
+
+        authRepository.getUserDashboard(
+                login.getUserId(),
+                new Callback<UserDashboardDTO>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<UserDashboardDTO> call,
+                            Response<UserDashboardDTO> response) {
+
+                        if (!response.isSuccessful()
+                                || response.body() == null) {
+                            return;
+                        }
+
+                        Integer completion =
+                                response.body().getProfileCompletion();
+
+                        if (completion == null) {
+                            completion = 0;
+                        }
+
+                        progressCompletion.setProgress(completion);
+
+                        tvCompletion.setText(
+                                "Profile Completion : "
+                                        + completion
+                                        + "%");
+
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<UserDashboardDTO> call,
+                            Throwable t) {
+
+                    }
+
+                });
+
+    }
 
 
 }
