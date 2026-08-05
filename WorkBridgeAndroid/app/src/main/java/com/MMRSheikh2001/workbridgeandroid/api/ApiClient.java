@@ -56,6 +56,7 @@ public class ApiClient {
                     .readTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .addInterceptor(new AuthInterceptor(context))
+                    .addInterceptor(new UnauthorizedInterceptor(context))
                     .addInterceptor(logging)
                     .build();
 
