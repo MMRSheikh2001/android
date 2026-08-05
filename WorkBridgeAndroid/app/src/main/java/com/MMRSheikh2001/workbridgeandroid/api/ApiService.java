@@ -17,6 +17,7 @@ import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.ResumeRespons
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.TrainingResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserLanguageResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.cvinformations.response.UserSkillResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.enums.NotificationType;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CategoryResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.CountryResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.masterdata.response.DistrictResponseDTO;
@@ -28,11 +29,13 @@ import com.MMRSheikh2001.workbridgeandroid.request.ForgotPasswordRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.JobApplicationRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.JobSearchRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.LoginRequestDTO;
+import com.MMRSheikh2001.workbridgeandroid.request.NotificationFilterDTO;
 import com.MMRSheikh2001.workbridgeandroid.request.UserRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.AIInterviewSessionResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.NotificationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserProfileResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
@@ -531,9 +534,6 @@ public interface ApiService {
             @Body ResumeImportPreviewDTO preview);
 
 
-
-
-
     // ==========================
     // Job
     // ==========================
@@ -602,6 +602,65 @@ public interface ApiService {
     @GET("api/ai/interview/{applicationId}")
     Call<AIInterviewSessionResponseDTO> getInterviewByApplicationId(
             @Path("applicationId") Long applicationId);
+
+
+    //====================================================
+// Notification
+//====================================================
+
+    // User notifications
+    @GET("api/notifications/user/{userId}")
+    Call<List<NotificationResponseDTO>> getUserNotifications(
+            @Path("userId") Long userId);
+
+    // By Id
+    @GET("api/notifications/{notificationId}")
+    Call<NotificationResponseDTO> getNotificationById(
+            @Path("notificationId") Long notificationId);
+
+    // Unread notifications
+    @GET("api/notifications/user/{userId}/unread")
+    Call<List<NotificationResponseDTO>> getUnreadNotifications(
+            @Path("userId") Long userId);
+
+    // Unread count
+    @GET("api/notifications/user/{userId}/count")
+    Call<Long> getUnreadNotificationCount(
+            @Path("userId") Long userId);
+
+    // Mark one as read
+    @PUT("api/notifications/{notificationId}/read")
+    Call<NotificationResponseDTO> markNotificationAsRead(
+            @Path("notificationId") Long notificationId,
+            @Query("userId") Long userId);
+
+    // Mark all as read
+    @PUT("api/notifications/user/{userId}/read-all")
+    Call<Void> markAllNotificationsAsRead(
+            @Path("userId") Long userId);
+
+    // Filter by type
+    @GET("api/notifications/user/{userId}/type/{type}")
+    Call<List<NotificationResponseDTO>> getNotificationsByType(
+            @Path("userId") Long userId,
+            @Path("type") NotificationType type);
+
+    // Delete one
+    @DELETE("api/notifications/{notificationId}/clear")
+    Call<Void> deleteNotification(
+            @Path("notificationId") Long notificationId,
+            @Query("userId") Long userId);
+
+    // Delete all
+    @DELETE("api/notifications/user/{userId}/clear")
+    Call<Void> deleteAllNotifications(
+            @Path("userId") Long userId);
+
+    // Search (Admin)
+    @POST("api/notifications/search")
+    Call<List<NotificationResponseDTO>> searchNotifications(
+            @Body NotificationFilterDTO filter);
+
 
     // ==============================
 // Language

@@ -10,10 +10,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.MMRSheikh2001.workbridgeandroid.repository.AuthRepository;
+import com.MMRSheikh2001.workbridgeandroid.repository.NotificationRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +39,11 @@ public class HomeActivity extends AppCompatActivity {
     private TextView tvMessages;
     private TextView tvNotifications;
 
+    private MaterialCardView cardNotifications;
+
     private AuthRepository authRepository;
+
+    private NotificationRepository notificationRepository;
 
 
     @Override
@@ -55,6 +61,9 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         btnLogout.setOnClickListener(v->logout());
+
+        cardNotifications.setOnClickListener(v -> goToNotifications());
+
     }
 
     private  void init(){
@@ -80,11 +89,25 @@ public class HomeActivity extends AppCompatActivity {
         tvMessages = findViewById(R.id.tvMessages);
         tvNotifications = findViewById(R.id.tvNotifications);
 
+        cardNotifications = findViewById(R.id.cardNotifications);
+
         authRepository = new AuthRepository(this);
         sessionManager = new SessionManager(this);
 
         sessionManager=new SessionManager(this);
+
+        notificationRepository =
+                new NotificationRepository(this);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        refreshNotificationCount();
+    }
+
+
     private void logout(){
         sessionManager.logout();
         Intent intent=new Intent(HomeActivity.this,LoginActivity.class);
@@ -164,8 +187,10 @@ public class HomeActivity extends AppCompatActivity {
                         tvMessages.setText(
                                 String.valueOf(dto.getUnreadMessages()));
 
+                        Long unread = dto.getUnreadNotifications();
+
                         tvNotifications.setText(
-                                String.valueOf(dto.getUnreadNotifications()));
+                                unread == null ? "0" : String.valueOf(unread));
                     }
 
                     @Override
@@ -178,6 +203,54 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    private void goToNotifications() {
+
+        Intent intent =
+                new Intent(
+                        HomeActivity.this,
+                        NotificationActivity.class);
+
+        startActivity(intent);
+    }
+
+    private void refreshNotificationCount() {
+
+        Long userId = sessionManager
+                .getUser()
+                .getUserId();
+
+        notificationRepository.getUnreadNotificationCount(
+                userId,
+                new Callback<Long>() {
+
+                    @Override
+                    public void onResponse(Call<Long> call,
+                                           Response<Long> response) {
+
+                        if (response.isSuccessful()
+                                && response.body() != null) {
+
+                            tvNotifications.setText(
+                                    String.valueOf(response.body()));
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Long> call,
+                                          Throwable t) {
+
+                        // Ignore
+                    }
+                });
+
+    }
+
+
+
+
 
 
 }
