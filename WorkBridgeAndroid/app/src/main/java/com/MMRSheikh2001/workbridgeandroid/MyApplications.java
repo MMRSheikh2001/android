@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.MMRSheikh2001.workbridgeandroid.adapter.ApplicationAdapter;
 import com.MMRSheikh2001.workbridgeandroid.repository.JobApplicationRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 
 import java.util.ArrayList;
@@ -69,8 +70,12 @@ public class MyApplications extends AppCompatActivity {
 
     private void loadApplications() {
 
-        Long userProfileId =
-                sessionManager.getUser().getProfileId();
+        LoginResponseDTO user = sessionManager.getUser();
+        if (user == null || user.getProfileId() == null) {
+            Toast.makeText(this, "No session found. Please log in again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Long userProfileId = user.getProfileId();
 
         jobApplicationRepository.getApplicationsByUserProfileId(
                 userProfileId,

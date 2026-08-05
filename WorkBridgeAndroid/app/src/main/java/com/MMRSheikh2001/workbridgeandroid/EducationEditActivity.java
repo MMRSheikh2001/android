@@ -455,6 +455,11 @@ public class EducationEditActivity extends AppCompatActivity {
         request.setBoard(text(etBoard));
         request.setFieldOfStudy(text(etFieldOfStudy));
 
+        if (text(actvResultType).isEmpty()) {
+            actvResultType.setError("Required");
+            return;
+        }
+
         request.setResultType(
                 ResultType.valueOf(
                         text(actvResultType)));

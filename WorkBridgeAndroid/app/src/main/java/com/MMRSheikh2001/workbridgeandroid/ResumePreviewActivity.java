@@ -86,6 +86,12 @@ public class ResumePreviewActivity extends AppCompatActivity {
 
         SessionManager sessionManager = new SessionManager(this);
 
+        if (sessionManager.getUser() == null || sessionManager.getUser().getProfileId() == null) {
+            Toast.makeText(this, "No profile found. Please log in again.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         userProfileId =
                 sessionManager.getUser().getProfileId();
 
@@ -531,11 +537,3 @@ public class ResumePreviewActivity extends AppCompatActivity {
 
 
 }
-
-
-
-
-
-
-
-

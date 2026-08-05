@@ -13,6 +13,7 @@ import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
 import com.MMRSheikh2001.workbridgeandroid.enums.ApplicationStatus;
 import com.MMRSheikh2001.workbridgeandroid.repository.JobApplicationRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
@@ -210,7 +211,12 @@ public class ApplicationDetailsActivity extends AppCompatActivity {
 
         SessionManager sessionManager = new SessionManager(this);
 
-        Long userProfileId = sessionManager.getUser().getProfileId();
+        LoginResponseDTO user = sessionManager.getUser();
+        if (user == null || user.getProfileId() == null) {
+            Toast.makeText(this, "No session found. Please log in again.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Long userProfileId = user.getProfileId();
 
         jobApplicationRepository.withdrawApplication(
                 applicationId,

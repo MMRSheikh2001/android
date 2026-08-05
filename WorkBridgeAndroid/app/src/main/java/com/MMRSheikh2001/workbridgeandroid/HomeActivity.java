@@ -55,29 +55,29 @@ public class HomeActivity extends AppCompatActivity {
 
         loadDashboard();
 
-        LoginResponseDTO user=sessionManager.getUser();
-        if(user!=null){
-            tvWelcome.setText("Welcome, "+user.getDisplayName()+" !");
+        LoginResponseDTO user = sessionManager.getUser();
+        if (user != null) {
+            tvWelcome.setText("Welcome, " + user.getDisplayName() + " !");
         }
 
-        btnLogout.setOnClickListener(v->logout());
+        btnLogout.setOnClickListener(v -> logout());
 
         cardNotifications.setOnClickListener(v -> goToNotifications());
 
     }
 
-    private  void init(){
-        tvWelcome=findViewById(R.id.tvWelcome);
+    private void init() {
+        tvWelcome = findViewById(R.id.tvWelcome);
 
-        btnFindJobs=findViewById(R.id.btnFindJobs);
-        btnMyApplications=findViewById(R.id.btnApplications);
-        btnProfile=findViewById(R.id.btnProfile);
+        btnFindJobs = findViewById(R.id.btnFindJobs);
+        btnMyApplications = findViewById(R.id.btnApplications);
+        btnProfile = findViewById(R.id.btnProfile);
 
-        btnFindJobs.setOnClickListener(v->goToJobList());
-        btnMyApplications.setOnClickListener(v->goToMyApplications());
-        btnProfile.setOnClickListener(v->goToMyProfile());
+        btnFindJobs.setOnClickListener(v -> goToJobList());
+        btnMyApplications.setOnClickListener(v -> goToMyApplications());
+        btnProfile.setOnClickListener(v -> goToMyProfile());
 
-        btnLogout=findViewById(R.id.btnLogout);
+        btnLogout = findViewById(R.id.btnLogout);
 
         tvUserName = findViewById(R.id.tvUserName);
         tvProfileCompletion = findViewById(R.id.tvProfileCompletion);
@@ -94,7 +94,7 @@ public class HomeActivity extends AppCompatActivity {
         authRepository = new AuthRepository(this);
         sessionManager = new SessionManager(this);
 
-        sessionManager=new SessionManager(this);
+        sessionManager = new SessionManager(this);
 
         notificationRepository =
                 new NotificationRepository(this);
@@ -108,25 +108,25 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void logout(){
+    private void logout() {
         sessionManager.logout();
-        Intent intent=new Intent(HomeActivity.this,LoginActivity.class);
+        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
 
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
 
         finish();
     }
 
-    private void goToJobList(){
+    private void goToJobList() {
 
-        Intent intent=new Intent(HomeActivity.this, JobListActivity.class);
+        Intent intent = new Intent(HomeActivity.this, JobListActivity.class);
         startActivity(intent);
 
     }
 
-    private void goToMyApplications(){
+    private void goToMyApplications() {
 
         Intent intent = new Intent(
                 HomeActivity.this,
@@ -135,7 +135,8 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
 
     }
-    private void goToMyProfile(){
+
+    private void goToMyProfile() {
 
         Intent intent = new Intent(
                 HomeActivity.this,
@@ -149,7 +150,11 @@ public class HomeActivity extends AppCompatActivity {
     //load dashboard
     private void loadDashboard() {
 
-        Long userId = sessionManager.getUser().getUserId();
+        LoginResponseDTO sessionUser = sessionManager.getUser();
+        if (sessionUser == null || sessionUser.getUserId() == null) {
+            return;
+        }
+        Long userId = sessionUser.getUserId();
 
         authRepository.getUserDashboard(userId,
                 new Callback<UserDashboardDTO>() {
@@ -242,15 +247,11 @@ public class HomeActivity extends AppCompatActivity {
                     public void onFailure(Call<Long> call,
                                           Throwable t) {
 
-                        // Ignore
+
                     }
                 });
 
     }
-
-
-
-
 
 
 }
