@@ -1,7 +1,7 @@
 package com.MMRSheikh2001.workbridgeandroid;
 
 import android.os.Bundle;
-import android.widget.ImageButton;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,8 @@ import com.MMRSheikh2001.workbridgeandroid.repository.NotificationRepository;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.NotificationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +25,11 @@ import retrofit2.Response;
 
 public class NotificationActivity extends AppCompatActivity {
 
+    private MaterialToolbar toolbar;
     private RecyclerView rvNotifications;
-    private ImageButton btnBack;
-    private ImageButton btnMarkAllRead;
-    private ImageButton btnDeleteAll;
+    private View layoutEmpty;
+    private MaterialButton btnMarkAllRead;
+    private MaterialButton btnClearAll;
 
     private NotificationAdapter adapter;
 
@@ -47,20 +50,21 @@ public class NotificationActivity extends AppCompatActivity {
 
         loadNotifications();
 
-        btnBack.setOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         btnMarkAllRead.setOnClickListener(v -> markAllRead());
 
-        btnDeleteAll.setOnClickListener(v -> deleteAll());
+        btnClearAll.setOnClickListener(v -> deleteAll());
     }
 
     private void init() {
 
+        toolbar = findViewById(R.id.toolbar);
         rvNotifications = findViewById(R.id.rvNotifications);
+        layoutEmpty = findViewById(R.id.layoutEmpty);
 
-        btnBack = findViewById(R.id.btnBack);
         btnMarkAllRead = findViewById(R.id.btnMarkAllRead);
-        btnDeleteAll = findViewById(R.id.btnDeleteAll);
+        btnClearAll = findViewById(R.id.btnClearAll);
 
         repository = new NotificationRepository(this);
 
@@ -68,12 +72,29 @@ public class NotificationActivity extends AppCompatActivity {
 
         LoginResponseDTO user = sessionManager.getUser();
 
+        if (user == null || user.getUserId() == null) {
+            Toast.makeText(this, "No session found. Please log in again.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         userId = user.getUserId();
 
         adapter = new NotificationAdapter(
                 this,
-                notificationList
-        );
+                notificationList,
+                new NotificationAdapter.OnNotificationClickListener() {
+
+                    @Override
+                    public void onNotificationClick(NotificationResponseDTO notification) {
+                        markAsRead(notification);
+                    }
+
+                    @Override
+                    public void onDelete(NotificationResponseDTO notification) {
+                        deleteOne(notification);
+                    }
+                });
 
         rvNotifications.setLayoutManager(
                 new LinearLayoutManager(this));
@@ -100,6 +121,8 @@ public class NotificationActivity extends AppCompatActivity {
                             notificationList.addAll(response.body());
 
                             adapter.notifyDataSetChanged();
+
+                            updateEmptyState();
 
                         } else {
 
@@ -162,6 +185,76 @@ public class NotificationActivity extends AppCompatActivity {
                 });
     }
 
+    private void markAsRead(NotificationResponseDTO notification) {
+
+        if (notification == null || notification.getId() == null) {
+            return;
+        }
+
+        repository.markNotificationAsRead(
+                notification.getId(),
+                userId,
+                new Callback<NotificationResponseDTO>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<NotificationResponseDTO> call,
+                            Response<NotificationResponseDTO> response) {
+
+                        if (response.isSuccessful()) {
+                            loadNotifications();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<NotificationResponseDTO> call,
+                            Throwable t) {
+
+                        Toast.makeText(
+                                NotificationActivity.this,
+                                t.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+    }
+
+    private void deleteOne(NotificationResponseDTO notification) {
+
+        if (notification == null || notification.getId() == null) {
+            return;
+        }
+
+        repository.deleteNotification(
+                notification.getId(),
+                userId,
+                new Callback<Void>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<Void> call,
+                            Response<Void> response) {
+
+                        if (response.isSuccessful()) {
+                            loadNotifications();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<Void> call,
+                            Throwable t) {
+
+                        Toast.makeText(
+                                NotificationActivity.this,
+                                t.getMessage(),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
+    }
+
     private void deleteAll() {
 
         repository.deleteAllNotifications(
@@ -184,6 +277,8 @@ public class NotificationActivity extends AppCompatActivity {
                             notificationList.clear();
 
                             adapter.notifyDataSetChanged();
+
+                            updateEmptyState();
                         }
                     }
 
@@ -199,5 +294,13 @@ public class NotificationActivity extends AppCompatActivity {
                         ).show();
                     }
                 });
+    }
+
+    private void updateEmptyState() {
+        layoutEmpty.setVisibility(
+                notificationList.isEmpty() ? View.VISIBLE : View.GONE);
+
+        rvNotifications.setVisibility(
+                notificationList.isEmpty() ? View.GONE : View.VISIBLE);
     }
 }
