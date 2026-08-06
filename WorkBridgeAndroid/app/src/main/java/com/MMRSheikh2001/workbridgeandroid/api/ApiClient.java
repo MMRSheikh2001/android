@@ -24,13 +24,13 @@ public class ApiClient {
 
 
     // Empubliculator
-  //  public static final String BASE_URL = "http://10.0.2.2:8090/";
+    public static final String BASE_URL = "http://10.0.2.2:8090/";
 
     // Real Device
     //     public static final String BASE_URL = "http://192.168.88.245:8090/";
 
     //Home
-   public static final String BASE_URL = "http://192.168.0.105:8090/";
+ //         public static final String BASE_URL = "http://192.168.0.105:8090/";
 
     // Real Device via USB (After running adb reverse)
     //  public static final String BASE_URL = "http://127.0.0.1:8090/";
