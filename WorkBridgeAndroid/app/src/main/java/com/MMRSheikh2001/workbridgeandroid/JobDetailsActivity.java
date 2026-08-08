@@ -14,9 +14,11 @@ import com.MMRSheikh2001.workbridgeandroid.request.JobApplicationRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.ResumeScreeningResult;
 import com.MMRSheikh2001.workbridgeandroid.session.SessionManager;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +50,8 @@ public class JobDetailsActivity extends AppCompatActivity {
 
     private MaterialButton btnApply;
 
+    private MaterialButton btnJobMatch;
+
     private JobApplicationRepository jobApplicationRepository;
 
     private SessionManager sessionManager;
@@ -65,6 +69,8 @@ public class JobDetailsActivity extends AppCompatActivity {
         if (jobId != 0) {
             loadJobDetails();
         }
+        btnApply.setOnClickListener(v -> applyJob());
+        btnJobMatch.setOnClickListener(v -> calculateJobMatch());
 
     }
 
@@ -87,6 +93,7 @@ public class JobDetailsActivity extends AppCompatActivity {
         imgCompanyLogo = findViewById(R.id.imgCompanyLogo);
 
         btnApply = findViewById(R.id.btnApply);
+        btnJobMatch = findViewById(R.id.btnJobMatch);
 
         jobRepository = new JobRepository(this);
         jobApplicationRepository = new JobApplicationRepository(this);
@@ -297,6 +304,130 @@ public class JobDetailsActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+
+    private void calculateJobMatch() {
+
+        LoginResponseDTO login = sessionManager.getUser();
+
+        if (login == null) {
+
+            Toast.makeText(
+                    this,
+                    "Please login first",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        Long userProfileId = login.getProfileId();
+
+        if (userProfileId == null) {
+
+            Toast.makeText(
+                    this,
+                    "Please complete your profile first",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        if (currentJob == null) {
+
+            Toast.makeText(
+                    this,
+                    "Job information is not available",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        btnJobMatch.setEnabled(false);
+        btnJobMatch.setText("Calculating...");
+
+        jobRepository.calculateJobMatch(
+                currentJob.getId(),
+                userProfileId,
+                new Callback<ResumeScreeningResult>() {
+
+                    @Override
+                    public void onResponse(
+                            Call<ResumeScreeningResult> call,
+                            Response<ResumeScreeningResult> response) {
+
+                        btnJobMatch.setEnabled(true);
+                        btnJobMatch.setText("Check Job Match");
+
+                        if (!response.isSuccessful()
+                                || response.body() == null) {
+
+                            Toast.makeText(
+                                    JobDetailsActivity.this,
+                                    "Unable to calculate job match",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            return;
+                        }
+
+                        ResumeScreeningResult result = response.body();
+
+                        showJobMatchDialog(result);
+                    }
+
+                    @Override
+                    public void onFailure(
+                            Call<ResumeScreeningResult> call,
+                            Throwable t) {
+
+                        btnJobMatch.setEnabled(true);
+                        btnJobMatch.setText("Check Job Match");
+
+                        Toast.makeText(
+                                JobDetailsActivity.this,
+                                "Unable to connect to server",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        t.printStackTrace();
+                    }
+                }
+        );
+    }
+
+
+    private void showJobMatchDialog(ResumeScreeningResult result) {
+
+        String scoreText;
+
+        if (result.getMatchScore() != null) {
+            scoreText = result.getMatchScore() + "%";
+        } else {
+            scoreText = "N/A";
+        }
+
+        String feedback = result.getFeedback();
+
+        if (feedback == null || feedback.trim().isEmpty()) {
+            feedback = "No feedback available.";
+        }
+
+        String message =
+                "Match Score\n"
+                        + scoreText
+                        + "\n\n"
+                        + "Feedback\n"
+                        + feedback;
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Job Match Result")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
     }
 
 

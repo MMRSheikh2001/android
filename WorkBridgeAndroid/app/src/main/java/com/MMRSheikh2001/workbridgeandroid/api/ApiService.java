@@ -36,6 +36,7 @@ import com.MMRSheikh2001.workbridgeandroid.response.JobApplicationResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.LoginResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.NotificationResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.ResumeScreeningResult;
 import com.MMRSheikh2001.workbridgeandroid.response.UserDashboardDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserProfileResponseDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.UserResponseDTO;
@@ -602,6 +603,17 @@ public interface ApiService {
     @GET("api/ai/interview/{applicationId}")
     Call<AIInterviewSessionResponseDTO> getInterviewByApplicationId(
             @Path("applicationId") Long applicationId);
+
+
+    //==========================================
+// AI Job Match
+//==========================================
+
+    @GET("api/ai/interview/{jobId}/match/{userProfileId}")
+    Call<ResumeScreeningResult> calculateJobMatch(
+            @Path("jobId") Long jobId,
+            @Path("userProfileId") Long userProfileId
+    );
 
 
     //====================================================

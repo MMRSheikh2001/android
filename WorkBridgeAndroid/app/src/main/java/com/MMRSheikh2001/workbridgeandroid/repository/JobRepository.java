@@ -6,6 +6,7 @@ import com.MMRSheikh2001.workbridgeandroid.api.ApiClient;
 import com.MMRSheikh2001.workbridgeandroid.api.ApiService;
 import com.MMRSheikh2001.workbridgeandroid.request.JobSearchRequestDTO;
 import com.MMRSheikh2001.workbridgeandroid.response.JobResponseDTO;
+import com.MMRSheikh2001.workbridgeandroid.response.ResumeScreeningResult;
 
 import java.util.List;
 
@@ -29,6 +30,22 @@ public class JobRepository {
 
     public void getJobById(Long id, Callback<JobResponseDTO> callback) {
         apiService.getJobById(id).enqueue(callback);
+    }
+
+
+    //==========================================
+// AI Job Match
+//==========================================
+
+    public void calculateJobMatch(
+            Long jobId,
+            Long userProfileId,
+            Callback<ResumeScreeningResult> callback) {
+
+        apiService.calculateJobMatch(
+                jobId,
+                userProfileId
+        ).enqueue(callback);
     }
 
 
